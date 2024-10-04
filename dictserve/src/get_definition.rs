@@ -15,8 +15,6 @@ use Languages::TargetLanguage;
 
 use crate::dictionary::DictionaryElement;
 
-use crate::utils::{get_userid_by_token_quickly, GenericFetchError};
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DictionaryResponse {
     element: DictionaryElement,
@@ -26,7 +24,7 @@ pub struct DictionaryResponse {
 #[derive(Deserialize)]
 pub struct DictionaryRequest {
     language: TargetLanguage,
-    text: String,
+    word: String,
 }
 
 pub async fn get_definition(
@@ -38,7 +36,7 @@ pub async fn get_definition(
 
     let dict_element = state
         .dictionary_store
-        .query(payload.language.clone(), &payload.text);
+        .query(payload.language.clone(), &payload.word);
 
     match dict_element {
         Some(element) => {

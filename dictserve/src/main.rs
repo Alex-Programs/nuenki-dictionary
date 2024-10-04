@@ -1,10 +1,7 @@
 mod config;
-mod database;
-mod datastore;
 mod dictionary;
 mod get_definition;
 mod metrics;
-mod utils;
 
 #[macro_use]
 extern crate savefile_derive;
@@ -29,12 +26,8 @@ use tracing_subscriber::prelude::*;
 
 use std::sync::Arc;
 
-use datastore::SyncedLocalDataStore;
-
 #[derive(Clone)]
 pub struct AppState {
-    pg_pool: PgPool,
-    store: Arc<SyncedLocalDataStore>,
     config: Config,
     dictionary_store: Arc<DictionaryStore>,
 }
@@ -65,21 +58,6 @@ async fn main() {
 
     let _ = tokio::spawn(task);
 
-    debug!("Config loaded");
-
-    let pg_pool = database::create_pool(&config.database_url, config.max_db_connections).await;
-
-    debug!("PG pool created");
-
-    let store = Arc::new(SyncedLocalDataStore::new(pg_pool.clone()).await);
-
-    let store_clone = store.clone();
-    let reconcile_interval = config.reconcile_interval;
-
-    tokio::spawn(async move {
-        intermittent_reconcile(store_clone, reconcile_interval).await;
-    });
-
     debug!("Reconciliation task started");
 
     info!("Creating in-memory dictionary...");
@@ -88,8 +66,6 @@ async fn main() {
     let app = Router::new()
         .route("/get_definition", get(get_definition::get_definition))
         .with_state(AppState {
-            pg_pool,
-            store,
             config: cloned_conf,
             dictionary_store: Arc::new(dict_store),
         });
@@ -120,28 +96,4 @@ async fn main() {
     axum::serve(listener, app)
         .await
         .expect("Failed to start serving");
-}
-
-async fn intermittent_reconcile(datastore: Arc<SyncedLocalDataStore>, interval: f32) {
-    loop {
-        let start = std::time::Instant::now();
-        let result = datastore.reconcile_with_db().await;
-        match result {
-            Ok(_) => {}
-            Err(e) => {
-                error!("Error reconciling with DB: {:?}", e);
-
-                // wait half the time before trying again
-                tokio::time::sleep(tokio::time::Duration::from_secs_f32(interval / 2.0)).await;
-
-                continue;
-            }
-        }
-
-        let elapsed = start.elapsed().as_secs_f32();
-
-        if elapsed < interval {
-            tokio::time::sleep(tokio::time::Duration::from_secs_f32(interval - elapsed)).await;
-        }
-    }
 }

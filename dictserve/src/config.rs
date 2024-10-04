@@ -5,12 +5,9 @@ use toml;
 pub struct Config {
     pub listen_address: String,
     pub listen_port: u16,
-    pub database_url: String,
-    pub reconcile_interval: f32,
     pub loki_url: String,
     pub loki_job: String,
     pub metrics_bind: String,
-    pub max_db_connections: u32,
     pub dump_path: String,
 }
 
