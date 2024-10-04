@@ -10,4 +10,4 @@ def test(word, lang):
     print(r.content)
 
 
-test("Haus", "German")
+test("Schlecht", "German")

@@ -1,8 +1,9 @@
 use memmap2::Mmap;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Seek, SeekFrom};
+use std::io::{BufRead, BufReader};
 use Languages::TargetLanguage;
 
 extern crate savefile;
@@ -15,13 +16,13 @@ extern crate savefile_derive;
 struct DictionaryElement {
     word: String,
     lang: TargetLanguage,
-    audio: Vec<String>,      // Can hold multiple audio links
-    ipa: Option<String>,     // Optional, as there might be none
-    word_types: Vec<String>, // Can hold multiple word types
+    audio: Vec<String>,
+    ipa: Option<String>,
+    word_types: Vec<String>,
     definitions: Vec<Definition>,
 }
 
-#[derive(Clone, Debug, Savefile, Serialize)]
+#[derive(Clone, Debug, Savefile, Serialize, PartialEq, Eq, Hash)]
 struct Definition {
     text: String,
     tags: Vec<String>,
@@ -30,20 +31,21 @@ struct Definition {
 fn main() -> std::io::Result<()> {
     // Open the file for reading
     let file = File::open("../raw-wiktextract-data.jsonl")?;
-    let file_size = file.metadata()?.len();
 
     // Create a memory-mapped view of the file
     let mmap = unsafe { Mmap::map(&file)? };
 
     let mut reader = BufReader::new(&*mmap);
-    let mut batch = Vec::with_capacity(100);
+    let mut batch = Vec::with_capacity(3000);
 
     let mut c = 0;
     let mut c_a = 0;
-    let mut last_print = 0;
-    let mut out_vec: Vec<DictionaryElement> = Vec::with_capacity(8000);
+    let mut c_dd = 0;
 
-    'main: loop {
+    let mut last_print = 0;
+    let mut out_vec: Vec<DictionaryElement> = Vec::with_capacity(3000);
+
+    loop {
         batch.clear();
         for _ in 0..3000 {
             let mut line = String::new();
@@ -54,7 +56,6 @@ fn main() -> std::io::Result<()> {
             }
         }
 
-        // Process batch of up to 100 lines here
         if batch.is_empty() {
             break; // End of file
         }
@@ -67,33 +68,62 @@ fn main() -> std::io::Result<()> {
         c_a += results.len();
         c += batch.len();
 
-        out_vec.extend(results);
+        // Merge duplicates
+        let merged_results = merge_duplicates(results);
+
+        c_dd += merged_results.len();
+
+        out_vec.extend(merged_results);
 
         if c_a - last_print > 32000 {
             let ratio = (c_a as f64 / c as f64) * 100.0;
-            println!("{} {} {:.3}%", c_a, c, ratio);
-
+            println!("{} | {} {} {:.3}%", c_dd, c_a, c, ratio);
             last_print = c_a;
-
-            //break;
         }
     }
 
     save_file("./dict.bin", 0, &out_vec).unwrap();
 
-    // also dump to a json, but only one in 200 translations
-    let one_in_200: Vec<&DictionaryElement> = out_vec
-        .iter()
-        .enumerate()
-        .filter(|(i, e)| i % 200 == 0)
-        .map(|(i, e)| e)
-        .collect();
+    // Dump to a JSON, but only entries where the word is "Haus"
+    let haus_entries: Vec<&DictionaryElement> =
+        out_vec.iter().filter(|e| e.word == "Haus").collect();
 
     let json_file = File::create("./dict.json")?;
-    serde_json::to_writer_pretty(json_file, &one_in_200)
+    serde_json::to_writer_pretty(json_file, &haus_entries)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
     Ok(())
+}
+
+fn merge_duplicates(elements: Vec<DictionaryElement>) -> Vec<DictionaryElement> {
+    let mut word_map: HashMap<(String, TargetLanguage), DictionaryElement> = HashMap::new();
+
+    for element in elements {
+        let key = (element.word.clone(), element.lang.clone());
+        word_map
+            .entry(key)
+            .and_modify(|existing| {
+                // Merge audio
+                existing.audio.extend(element.audio.clone());
+                existing.audio.dedup();
+
+                // Merge IPA (keep the first non-None value)
+                if existing.ipa.is_none() {
+                    existing.ipa = element.ipa.clone();
+                }
+
+                // Merge word types
+                existing.word_types.extend(element.word_types.clone());
+                existing.word_types.dedup();
+
+                // Merge definitions
+                existing.definitions.extend(element.definitions.clone());
+                existing.definitions.dedup();
+            })
+            .or_insert(element);
+    }
+
+    word_map.into_values().collect()
 }
 
 fn process_element(text: &str) -> Option<DictionaryElement> {
