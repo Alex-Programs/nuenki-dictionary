@@ -2,13 +2,8 @@ mod config;
 mod dictionary;
 mod get_definition;
 mod metrics;
-
-#[macro_use]
-extern crate savefile_derive;
-
 use config::Config;
 use dictionary::DictionaryStore;
-use sqlx::PgPool;
 
 use axum::routing::{get, post};
 use axum::Router;
@@ -61,13 +56,13 @@ async fn main() {
     debug!("Reconciliation task started");
 
     info!("Creating in-memory dictionary...");
-    let dict_store = dictionary::DictionaryStore::from_elements_dump(config.dump_path);
+    let dict_store = dictionary::DictionaryStore::from_elements_dump(&config.dump_path);
 
     let app = Router::new()
         .route("/get_definition", get(get_definition::get_definition))
         .with_state(AppState {
             config: cloned_conf,
-            dictionary_store: Arc::new(dict_store),
+            dictionary_store: Arc::new(dict_store.unwrap()),
         });
 
     debug!("App initialised");

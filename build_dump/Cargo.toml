@@ -10,6 +10,7 @@ serde_json = "1.0.128"
 
 Languages = { path = "../../nuenki-relay-sched/LanguagesStoreRs" }
 
-savefile = "0.17"
-savefile-derive = "0.17"
 rayon = "1.7"
+
+zstd = "0.11"
+bincode = "1.3"
