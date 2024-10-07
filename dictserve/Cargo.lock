@@ -3,19 +3,7 @@
 version = 3
 
 [[package]]
-name = "Languages"
-version = "0.1.0"
-dependencies = [
- "savefile",
- "savefile-derive",
- "serde",
- "sqlx",
- "strum",
- "strum_macros",
-]
-
-[[package]]
-name = "TranslatorRelay"
+name = "DictServe"
 version = "0.1.0"
 dependencies = [
  "Languages",
@@ -33,6 +21,18 @@ dependencies = [
  "tracing-loki",
  "tracing-subscriber",
  "zstd",
+]
+
+[[package]]
+name = "Languages"
+version = "0.1.0"
+dependencies = [
+ "savefile",
+ "savefile-derive",
+ "serde",
+ "sqlx",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]

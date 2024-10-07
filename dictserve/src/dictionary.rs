@@ -3,7 +3,6 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
 use std::time::Instant;
 use tracing::info;
 use zstd::stream::decode_all;
@@ -16,13 +15,18 @@ pub struct Definition {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CompressedDictionaryElement {
+pub struct CompressedDictionaryElementWrapper {
     word: String,
     lang: TargetLanguage,
-    audio: Vec<u8>, // Compressed
+    compressed_data: Vec<u8>, // Compressed blob of DictionaryElementData
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct DictionaryElementData {
+    audio: Vec<String>,
     ipa: Option<String>,
-    word_types: Vec<u8>,  // Compressed
-    definitions: Vec<u8>, // Compressed
+    word_types: Vec<String>,
+    definitions: Vec<Definition>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -47,7 +51,7 @@ impl DictionaryElement {
 }
 
 pub struct DictionaryStore {
-    datastore: DashMap<(TargetLanguage, String), CompressedDictionaryElement>,
+    datastore: DashMap<(TargetLanguage, String), CompressedDictionaryElementWrapper>,
 }
 
 impl DictionaryStore {
@@ -57,9 +61,11 @@ impl DictionaryStore {
         let mut file = File::open(path)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
-        let elements: Vec<CompressedDictionaryElement> = bincode::deserialize(&buffer).unwrap();
+        let elements: Vec<CompressedDictionaryElementWrapper> =
+            bincode::deserialize(&buffer).unwrap();
         let e_c = elements.len();
-        let store: DashMap<(TargetLanguage, String), CompressedDictionaryElement> = DashMap::new();
+        let store: DashMap<(TargetLanguage, String), CompressedDictionaryElementWrapper> =
+            DashMap::new();
 
         // Use rayon to parallelize insertion
         elements.into_par_iter().for_each(|element| {
@@ -81,18 +87,18 @@ impl DictionaryStore {
         println!("Querying with key: {:?}", key);
 
         // Try querying with the original word
-        if let Some(compressed_value) = self.datastore.get(&key) {
+        if let Some(compressed_wrapper) = self.datastore.get(&key) {
             println!("Found value for original word");
-            return Some(self.decompress_element(compressed_value.value()));
+            return Some(self.decompress_element(compressed_wrapper.value()));
         }
 
         // If not found and the word isn't all lowercase, try again with the lowercase word
         if word != word.to_lowercase() {
             let lower_key = (lang, word.to_lowercase());
             println!("Trying lowercase key: {:?}", lower_key);
-            if let Some(compressed_value) = self.datastore.get(&lower_key) {
+            if let Some(compressed_wrapper) = self.datastore.get(&lower_key) {
                 println!("Found value for lowercase word");
-                return Some(self.decompress_element(compressed_value.value()));
+                return Some(self.decompress_element(compressed_wrapper.value()));
             }
         }
 
@@ -100,16 +106,20 @@ impl DictionaryStore {
         None
     }
 
-    fn decompress_element(&self, compressed: &CompressedDictionaryElement) -> DictionaryElement {
+    fn decompress_element(
+        &self,
+        compressed: &CompressedDictionaryElementWrapper,
+    ) -> DictionaryElement {
+        let decompressed_data: DictionaryElementData =
+            bincode::deserialize(&decode_all(&compressed.compressed_data[..]).unwrap()).unwrap();
+
         DictionaryElement {
             word: compressed.word.clone(),
             lang: compressed.lang.clone(),
-            audio: bincode::deserialize(&decode_all(&compressed.audio[..]).unwrap()).unwrap(),
-            ipa: compressed.ipa.clone(),
-            word_types: bincode::deserialize(&decode_all(&compressed.word_types[..]).unwrap())
-                .unwrap(),
-            definitions: bincode::deserialize(&decode_all(&compressed.definitions[..]).unwrap())
-                .unwrap(),
+            audio: decompressed_data.audio,
+            ipa: decompressed_data.ipa,
+            word_types: decompressed_data.word_types,
+            definitions: decompressed_data.definitions,
         }
     }
 }

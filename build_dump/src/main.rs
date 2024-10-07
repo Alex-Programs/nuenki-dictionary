@@ -3,7 +3,7 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, Cursor, Write};
 use std::path::Path;
 use zstd::stream::{decode_all, encode_all};
 use Languages::TargetLanguage;
@@ -11,13 +11,18 @@ use Languages::TargetLanguage;
 const COMPRESS_LVL: i32 = 9;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-struct CompressedDictionaryElement {
+struct CompressedDictionaryElementWrapper {
     word: String,
     lang: TargetLanguage,
-    audio: Vec<u8>, // Compressed
+    compressed_data: Vec<u8>, // Compressed blob of DictionaryElementData
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct DictionaryElementData {
+    audio: Vec<String>,
     ipa: Option<String>,
-    word_types: Vec<u8>,  // Compressed
-    definitions: Vec<u8>, // Compressed
+    word_types: Vec<String>,
+    definitions: Vec<Definition>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -31,12 +36,8 @@ fn main() -> std::io::Result<()> {
     let output_path = Path::new("./compressed_dict.bin");
     let json_output_path = Path::new("./compressed_dict.json");
 
-    // Open the file for reading
     let file = File::open(input_path)?;
-
-    // Create a memory-mapped view of the file
     let mmap = unsafe { Mmap::map(&file)? };
-
     let mut reader = BufReader::new(&*mmap);
     let mut batch = Vec::with_capacity(3000);
 
@@ -45,24 +46,24 @@ fn main() -> std::io::Result<()> {
     let mut c_dd = 0;
 
     let mut last_print = 0;
-    let mut out_vec: Vec<CompressedDictionaryElement> = Vec::with_capacity(3000);
+    let mut out_vec: Vec<CompressedDictionaryElementWrapper> = Vec::with_capacity(3000);
 
     loop {
         batch.clear();
         for _ in 0..3000 {
             let mut line = String::new();
             match reader.read_line(&mut line) {
-                Ok(0) => break, // End of file
+                Ok(0) => break,
                 Ok(_) => batch.push(line),
-                Err(e) => return Err(e), // Handle read error
+                Err(e) => return Err(e),
             }
         }
 
         if batch.is_empty() {
-            break; // End of file
+            break;
         }
 
-        let results: Vec<CompressedDictionaryElement> = batch
+        let results: Vec<CompressedDictionaryElementWrapper> = batch
             .par_iter()
             .filter_map(|line| process_element(line.as_str()))
             .collect();
@@ -70,27 +71,24 @@ fn main() -> std::io::Result<()> {
         c_a += results.len();
         c += batch.len();
 
-        // Merge duplicates
         let merged_results = merge_duplicates(results);
 
         c_dd += merged_results.len();
 
         out_vec.extend(merged_results);
 
-        if c_a - last_print > 32000 {
+        if c_a - last_print > 10000 {
             let ratio = (c_a as f64 / c as f64) * 100.0;
             println!("{} | {} {} {:.3}%", c_dd, c_a, c, ratio);
             last_print = c_a;
         }
     }
 
-    // Compress and save
     let encoded: Vec<u8> = bincode::serialize(&out_vec).unwrap();
     let mut file = File::create(output_path)?;
     file.write_all(&encoded)?;
 
-    // Dump to a JSON, but only entries where the word is "Haus"
-    let haus_entries: Vec<&CompressedDictionaryElement> =
+    let haus_entries: Vec<&CompressedDictionaryElementWrapper> =
         out_vec.iter().filter(|e| e.word == "Haus").collect();
 
     let json_file = File::create(json_output_path)?;
@@ -101,9 +99,9 @@ fn main() -> std::io::Result<()> {
 }
 
 fn merge_duplicates(
-    elements: Vec<CompressedDictionaryElement>,
-) -> Vec<CompressedDictionaryElement> {
-    let mut word_map: HashMap<(String, TargetLanguage), CompressedDictionaryElement> =
+    elements: Vec<CompressedDictionaryElementWrapper>,
+) -> Vec<CompressedDictionaryElementWrapper> {
+    let mut word_map: HashMap<(String, TargetLanguage), CompressedDictionaryElementWrapper> =
         HashMap::new();
 
     for element in elements {
@@ -111,46 +109,28 @@ fn merge_duplicates(
         word_map
             .entry(key)
             .and_modify(|existing| {
-                // Merge audio (decompress, merge, then compress)
-                let mut existing_audio: Vec<String> =
-                    bincode::deserialize(&decode_all(&existing.audio[..]).unwrap()).unwrap();
-                let new_audio: Vec<String> =
-                    bincode::deserialize(&decode_all(&element.audio[..]).unwrap()).unwrap();
-                existing_audio.extend(new_audio);
-                existing_audio.dedup();
-                existing.audio = encode_all(
-                    &bincode::serialize(&existing_audio).unwrap()[..],
-                    COMPRESS_LVL,
-                )
-                .unwrap();
+                let mut existing_data: DictionaryElementData =
+                    bincode::deserialize(&decode_all(&existing.compressed_data[..]).unwrap())
+                        .unwrap();
+                let new_data: DictionaryElementData =
+                    bincode::deserialize(&decode_all(&element.compressed_data[..]).unwrap())
+                        .unwrap();
 
-                // Merge IPA (keep the first non-None value)
-                if existing.ipa.is_none() {
-                    existing.ipa = element.ipa.clone();
+                existing_data.audio.extend(new_data.audio);
+                existing_data.audio.dedup();
+
+                if existing_data.ipa.is_none() {
+                    existing_data.ipa = new_data.ipa;
                 }
 
-                // Merge word types (decompress, merge, then compress)
-                let mut existing_word_types: Vec<String> =
-                    bincode::deserialize(&decode_all(&existing.word_types[..]).unwrap()).unwrap();
-                let new_word_types: Vec<String> =
-                    bincode::deserialize(&decode_all(&element.word_types[..]).unwrap()).unwrap();
-                existing_word_types.extend(new_word_types);
-                existing_word_types.dedup();
-                existing.word_types = encode_all(
-                    &bincode::serialize(&existing_word_types).unwrap()[..],
-                    COMPRESS_LVL,
-                )
-                .unwrap();
+                existing_data.word_types.extend(new_data.word_types);
+                existing_data.word_types.dedup();
 
-                // Merge definitions (decompress, merge, then compress)
-                let mut existing_definitions: Vec<Definition> =
-                    bincode::deserialize(&decode_all(&existing.definitions[..]).unwrap()).unwrap();
-                let new_definitions: Vec<Definition> =
-                    bincode::deserialize(&decode_all(&element.definitions[..]).unwrap()).unwrap();
-                existing_definitions.extend(new_definitions);
-                existing_definitions.dedup();
-                existing.definitions = encode_all(
-                    &bincode::serialize(&existing_definitions).unwrap()[..],
+                existing_data.definitions.extend(new_data.definitions);
+                existing_data.definitions.dedup();
+
+                existing.compressed_data = encode_all(
+                    &bincode::serialize(&existing_data).unwrap()[..],
                     COMPRESS_LVL,
                 )
                 .unwrap();
@@ -161,14 +141,8 @@ fn merge_duplicates(
     word_map.into_values().collect()
 }
 
-fn process_element(text: &str) -> Option<CompressedDictionaryElement> {
-    let json: serde_json::Value = match serde_json::from_str(text) {
-        Ok(d) => d,
-        Err(e) => {
-            println!("Error parsing: {:?}", e);
-            return None;
-        }
-    };
+fn process_element(text: &str) -> Option<CompressedDictionaryElementWrapper> {
+    let json: serde_json::Value = serde_json::from_str(text).ok()?;
 
     let language = get_language(&json)?;
     let word = get_word(&json)?;
@@ -177,15 +151,23 @@ fn process_element(text: &str) -> Option<CompressedDictionaryElement> {
     let word_types = get_word_types(&json)?;
     let definitions = get_definitions(&json)?;
 
-    Some(CompressedDictionaryElement {
+    let data = DictionaryElementData {
+        audio,
+        ipa,
+        word_types,
+        definitions,
+    };
+
+    let encoded = bincode::serialize(&data).unwrap();
+
+    let readable = Cursor::new(encoded);
+
+    let compressed_data = encode_all(readable, COMPRESS_LVL).unwrap();
+
+    Some(CompressedDictionaryElementWrapper {
         word,
         lang: language,
-        audio: encode_all(&bincode::serialize(&audio).unwrap()[..], COMPRESS_LVL).unwrap(),
-        ipa,
-        word_types: encode_all(&bincode::serialize(&word_types).unwrap()[..], COMPRESS_LVL)
-            .unwrap(),
-        definitions: encode_all(&bincode::serialize(&definitions).unwrap()[..], COMPRESS_LVL)
-            .unwrap(),
+        compressed_data,
     })
 }
 
