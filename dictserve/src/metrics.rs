@@ -16,21 +16,6 @@ pub fn setup_metrics_recorder() -> Arc<Mutex<PrometheusHandle>> {
 
         let recorder_handle = PrometheusBuilder::new()
             .set_buckets_for_metric(
-                Matcher::Full("dict_get_read_lock_duration_seconds".to_string()),
-                LOCK_HIST,
-            )
-            .unwrap()
-            .set_buckets_for_metric(
-                Matcher::Full("dict_get_write_lock_duration_seconds".to_string()),
-                LOCK_HIST,
-            )
-            .unwrap()
-            .set_buckets_for_metric(
-                Matcher::Full("dict_reconcile_db_duration_seconds".to_string()),
-                DB_HIST,
-            )
-            .unwrap()
-            .set_buckets_for_metric(
                 Matcher::Full("dict_get_item_duration_seconds".to_string()),
                 DB_HIST,
             )

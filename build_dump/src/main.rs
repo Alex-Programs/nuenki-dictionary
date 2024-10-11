@@ -2,13 +2,15 @@ use memmap2::Mmap;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs::File;
+use std::hash::Hash;
 use std::io::{BufRead, BufReader, Cursor, Write};
 use std::path::Path;
 use zstd::stream::{decode_all, encode_all};
 use Languages::TargetLanguage;
 
-const COMPRESS_LVL: i32 = 9;
+const COMPRESS_LVL: i32 = 1;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct CompressedDictionaryElementWrapper {
@@ -29,6 +31,11 @@ struct DictionaryElementData {
 struct Definition {
     text: String,
     tags: Vec<String>,
+}
+
+fn dedup_preserve_order<T: Clone + Eq + Hash>(vec: &mut Vec<T>) {
+    let mut seen = HashSet::new();
+    vec.retain(|item| seen.insert(item.clone()));
 }
 
 fn main() -> std::io::Result<()> {
@@ -89,7 +96,7 @@ fn main() -> std::io::Result<()> {
     file.write_all(&encoded)?;
 
     let haus_entries: Vec<&CompressedDictionaryElementWrapper> =
-        out_vec.iter().filter(|e| e.word == "Haus").collect();
+        out_vec.iter().filter(|e| e.word == "nach").collect();
 
     let json_file = File::create(json_output_path)?;
     serde_json::to_writer_pretty(json_file, &haus_entries)
@@ -117,17 +124,17 @@ fn merge_duplicates(
                         .unwrap();
 
                 existing_data.audio.extend(new_data.audio);
-                existing_data.audio.dedup();
+                dedup_preserve_order(&mut existing_data.audio);
 
                 if existing_data.ipa.is_none() {
                     existing_data.ipa = new_data.ipa;
                 }
 
                 existing_data.word_types.extend(new_data.word_types);
-                existing_data.word_types.dedup();
+                dedup_preserve_order(&mut existing_data.word_types);
 
                 existing_data.definitions.extend(new_data.definitions);
-                existing_data.definitions.dedup();
+                dedup_preserve_order(&mut existing_data.definitions);
 
                 existing.compressed_data = encode_all(
                     &bincode::serialize(&existing_data).unwrap()[..],
@@ -191,7 +198,8 @@ fn get_ipa(json: &serde_json::Value) -> Option<String> {
 }
 
 fn get_audio(json: &serde_json::Value) -> Vec<String> {
-    json.get("sounds")
+    let mut audio = json
+        .get("sounds")
         .and_then(|sounds| sounds.as_array())
         .map_or(Vec::new(), |sounds| {
             sounds
@@ -204,11 +212,16 @@ fn get_audio(json: &serde_json::Value) -> Vec<String> {
                         .map(|s| s.to_string())
                 })
                 .collect()
-        })
+        });
+
+    dedup_preserve_order(&mut audio);
+
+    audio
 }
 
 fn get_word_types(json: &serde_json::Value) -> Option<Vec<String>> {
-    json.get("pos")
+    let types = json
+        .get("pos")
         .and_then(|pos| pos.as_str())
         .map(|s| vec![s.to_string()])
         .or_else(|| {
@@ -225,11 +238,21 @@ fn get_word_types(json: &serde_json::Value) -> Option<Vec<String>> {
                         })
                         .collect()
                 })
-        })
+        });
+
+    match types {
+        None => None,
+        Some(mut t) => {
+            dedup_preserve_order(&mut t);
+
+            Some(t)
+        }
+    }
 }
 
 fn get_definitions(json: &serde_json::Value) -> Option<Vec<Definition>> {
-    json.get("senses")
+    let defs = json
+        .get("senses")
         .and_then(|senses| senses.as_array())
         .map(|senses| {
             senses
@@ -259,5 +282,14 @@ fn get_definitions(json: &serde_json::Value) -> Option<Vec<Definition>> {
                         })
                 })
                 .collect()
-        })
+        });
+
+    match defs {
+        None => None,
+        Some(mut t) => {
+            dedup_preserve_order(&mut t);
+
+            Some(t)
+        }
+    }
 }
