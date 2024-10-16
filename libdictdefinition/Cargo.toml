@@ -1,0 +1,8 @@
+[package]
+name = "libdictdefinition"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+Languages = { path = "../../nuenki-relay-sched/LanguagesStoreRs" }
+serde = { version = "1.0", features = ["derive"] }

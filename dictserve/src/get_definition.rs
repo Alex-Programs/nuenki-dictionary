@@ -13,11 +13,11 @@ use metrics::{counter, histogram};
 use std::time::Instant;
 use Languages::TargetLanguage;
 
-use crate::dictionary::DictionaryElement;
+use libdictdefinition::DictionaryElementData;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DictionaryResponse {
-    element: DictionaryElement,
+    element: DictionaryElementData,
     wiktionary_link: String,
 }
 

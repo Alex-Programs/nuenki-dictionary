@@ -1,54 +1,14 @@
 use dashmap::DashMap;
+use libdictdefinition::{
+    CompressedDictionaryElementWrapper, Definition, DictionaryElementData, HyperlinkedText,
+};
 use rayon::prelude::*;
-use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
 use std::time::Instant;
 use tracing::info;
 use zstd::stream::decode_all;
 use Languages::TargetLanguage;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Definition {
-    text: String,
-    tags: Vec<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CompressedDictionaryElementWrapper {
-    word: String,
-    lang: TargetLanguage,
-    compressed_data: Vec<u8>, // Compressed blob of DictionaryElementData
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-struct DictionaryElementData {
-    audio: Vec<String>,
-    ipa: Option<String>,
-    word_types: Vec<String>,
-    definitions: Vec<Definition>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct DictionaryElement {
-    word: String,
-    lang: TargetLanguage,
-    audio: Vec<String>,
-    ipa: Option<String>,
-    word_types: Vec<String>,
-    definitions: Vec<Definition>,
-}
-
-impl DictionaryElement {
-    pub fn get_wiktionary_link(&self) -> String {
-        let encoded_word = self.word.replace(" ", "");
-        format!(
-            "https://en.wiktionary.org/wiki/{}#{}",
-            encoded_word,
-            self.lang.to_wiktionary_long_name()
-        )
-    }
-}
 
 pub struct DictionaryStore {
     datastore: DashMap<(TargetLanguage, String), CompressedDictionaryElementWrapper>,
@@ -92,7 +52,7 @@ impl DictionaryStore {
         Ok(Self { datastore: store })
     }
 
-    pub fn query(&self, lang: TargetLanguage, word: &str) -> Option<DictionaryElement> {
+    pub fn query(&self, lang: TargetLanguage, word: &str) -> Option<DictionaryElementData> {
         let key = (lang.clone(), word.to_string());
         println!("Querying with key: {:?}", key);
 
@@ -132,17 +92,18 @@ impl DictionaryStore {
     fn decompress_element(
         &self,
         compressed: &CompressedDictionaryElementWrapper,
-    ) -> DictionaryElement {
+    ) -> DictionaryElementData {
         let decompressed_data: DictionaryElementData =
             bincode::deserialize(&decode_all(&compressed.compressed_data[..]).unwrap()).unwrap();
 
-        DictionaryElement {
+        DictionaryElementData {
             word: compressed.word.clone(),
             lang: compressed.lang.clone(),
             audio: decompressed_data.audio,
             ipa: decompressed_data.ipa,
             word_types: decompressed_data.word_types,
             definitions: decompressed_data.definitions,
+            translation: decompressed_data.translation,
         }
     }
 }

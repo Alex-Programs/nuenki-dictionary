@@ -1,0 +1,107 @@
+[
+  {
+    "word": "Haus",
+    "lang": "German",
+    "audio": [
+      "https://upload.wikimedia.org/wikipedia/commons/7/7e/De-Haus.ogg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/54/De-Haus2.ogg"
+    ],
+    "ipa": "/haʊ̯s/",
+    "word_types": [
+      "noun",
+      "name"
+    ],
+    "definitions": [
+      {
+        "text": [
+          {
+            "Plain": "house"
+          }
+        ],
+        "tags": [
+          "Neuter",
+          "Strong"
+        ]
+      },
+      {
+        "text": [
+          {
+            "Plain": "home"
+          },
+          {
+            "Plain": " ("
+          },
+          {
+            "Link": "in"
+          },
+          {
+            "Plain": " "
+          },
+          {
+            "Plain": "various"
+          },
+          {
+            "Plain": " "
+          },
+          {
+            "Plain": "phrases"
+          },
+          {
+            "Plain": ")"
+          }
+        ],
+        "tags": [
+          "Neuter",
+          "Strong"
+        ]
+      },
+      {
+        "text": [
+          {
+            "Plain": "theatre"
+          }
+        ],
+        "tags": [
+          "Neuter",
+          "Strong"
+        ]
+      },
+      {
+        "text": [
+          {
+            "Link": "A"
+          },
+          {
+            "Plain": " "
+          },
+          {
+            "Plain": "municipality"
+          },
+          {
+            "Plain": " "
+          },
+          {
+            "Plain": "of"
+          },
+          {
+            "Plain": " "
+          },
+          {
+            "Plain": "Styria"
+          },
+          {
+            "Plain": ", "
+          },
+          {
+            "Plain": "Austria"
+          }
+        ],
+        "tags": [
+          "Neuter",
+          "Proper-noun"
+        ]
+      }
+    ],
+    "translation": null
+  }
+]
