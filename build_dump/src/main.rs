@@ -10,6 +10,13 @@ use std::path::Path;
 use zstd::stream::{decode_all, encode_all};
 use Languages::TargetLanguage;
 
+use lazy_static::lazy_static;
+use std::sync::Mutex;
+
+lazy_static! {
+    static ref TAG_COUNTS: Mutex<HashMap<String, usize>> = Mutex::new(HashMap::new());
+}
+
 const COMPRESS_LVL: i32 = 1;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -84,12 +91,14 @@ fn main() -> std::io::Result<()> {
 
         out_vec.extend(merged_results);
 
-        if c_a - last_print > 10000 {
+        if c_a - last_print > 100000 {
             let ratio = (c_a as f64 / c as f64) * 100.0;
             println!("{} | {} {} {:.3}%", c_dd, c_a, c, ratio);
             last_print = c_a;
         }
     }
+
+    //print_sorted_tag_counts();
 
     let encoded: Vec<u8> = bincode::serialize(&out_vec).unwrap();
     let mut file = File::create(output_path)?;
@@ -103,6 +112,17 @@ fn main() -> std::io::Result<()> {
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
     Ok(())
+}
+
+fn print_sorted_tag_counts() {
+    let tag_counts = TAG_COUNTS.lock().unwrap();
+    let mut sorted_counts: Vec<_> = tag_counts.iter().collect();
+    sorted_counts.sort_by(|a, b| b.1.cmp(a.1));
+
+    println!("\nTag usage counts:");
+    for (tag, count) in sorted_counts {
+        println!("{} {}", tag, count);
+    }
 }
 
 fn merge_duplicates(
@@ -153,6 +173,13 @@ fn process_element(text: &str) -> Option<CompressedDictionaryElementWrapper> {
 
     let language = get_language(&json)?;
     let word = get_word(&json)?;
+
+    if word == "bis" {
+        println!("Found relevant word: {}", word);
+        println!("Text: {}", text);
+        println!("JSON: {}", json);
+    }
+
     let ipa = get_ipa(&json);
     let audio = get_audio(&json);
     let word_types = get_word_types(&json)?;
@@ -268,6 +295,12 @@ fn get_definitions(json: &serde_json::Value) -> Option<Vec<Definition>> {
                                 .collect()
                         },
                     );
+
+                    // Update tag counts
+                    let mut tag_counts = TAG_COUNTS.lock().unwrap();
+                    for tag in &tags {
+                        *tag_counts.entry(tag.clone()).or_insert(0) += 1;
+                    }
 
                     sense
                         .get("glosses")
