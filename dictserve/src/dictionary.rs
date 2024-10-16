@@ -96,15 +96,7 @@ impl DictionaryStore {
         let decompressed_data: DictionaryElementData =
             bincode::deserialize(&decode_all(&compressed.compressed_data[..]).unwrap()).unwrap();
 
-        DictionaryElementData {
-            word: compressed.word.clone(),
-            lang: compressed.lang.clone(),
-            audio: decompressed_data.audio,
-            ipa: decompressed_data.ipa,
-            word_types: decompressed_data.word_types,
-            definitions: decompressed_data.definitions,
-            translation: decompressed_data.translation,
-        }
+        decompressed_data
     }
 }
 

@@ -92,11 +92,6 @@ fn merge_duplicates(elements: Vec<DictionaryElementData>) -> Vec<DictionaryEleme
                 // Merge definitions
                 existing.definitions.extend(element.definitions.clone());
                 dedup_preserve_order(&mut existing.definitions);
-
-                // Merge translations
-                if existing.translation.is_none() {
-                    existing.translation = element.translation.clone();
-                }
             })
             .or_insert(element);
     }
@@ -125,7 +120,7 @@ fn process_json_entry(
     let ipa = get_ipa(json);
     let word_types = get_word_types(json)?;
     let definitions = get_definitions(json, word_set, &language)?;
-    let translation = get_english_translation(json);
+    //let translation = get_english_translation(json);
 
     Some(DictionaryElementData {
         word,
@@ -134,7 +129,6 @@ fn process_json_entry(
         ipa,
         word_types,
         definitions,
-        translation: translation,
     })
 }
 

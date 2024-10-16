@@ -21,7 +21,6 @@ pub struct DictionaryElementData {
     pub ipa: Option<String>,
     pub word_types: Vec<String>,
     pub definitions: Vec<Definition>,
-    pub translation: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

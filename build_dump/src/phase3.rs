@@ -3,7 +3,7 @@ use zstd::stream::encode_all;
 
 use libdictdefinition::{CompressedDictionaryElementWrapper, DictionaryElementData};
 
-const COMPRESS_LVL: i32 = 4;
+const COMPRESS_LVL: i32 = 2;
 const BATCH_SIZE: usize = 12 * 1000 * 2;
 
 pub fn compress_dictionary_data(

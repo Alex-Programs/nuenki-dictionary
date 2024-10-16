@@ -1,0 +1,1605 @@
+{
+    "senses": [
+        {
+            "examples": [
+                {
+                    "text": "In early July, I returned to Europe for the G-7 summit in Naples. On the way, I stopped in Riga, Latvia, to meet with the leaders of the Baltic states and celebrate the withdrawal of Russian troops from Lithuania and Latvia, a move we had helped to speed up by providing a large number of housing vouchers for Russian officers who wanted to go home.",
+                    "ref": "2005, Bill Clinton, My Life, volume II, New York: Vintage Books, →ISBN, →OCLC, page 185:",
+                    "type": "quote"
+                }
+            ],
+            "wikidata": [
+                "Q211"
+            ],
+            "senseid": [
+                "en:Q211"
+            ],
+            "links": [
+                [
+                    "Europe",
+                    "Europe#English"
+                ],
+                [
+                    "Republic of Latvia",
+                    "Republic of Latvia#English"
+                ]
+            ],
+            "categories": [
+                "Assamese terms with non-redundant manual transliterations",
+                "Assyrian Neo-Aramaic terms with non-redundant manual transliterations",
+                "English entries with incorrect language header",
+                "English entries with language name categories using raw markup",
+                "English exonyms",
+                "English lemmas",
+                "English proper nouns",
+                "English terms borrowed from Latvian",
+                "English terms derived from Latvian",
+                "English terms suffixed with -ia",
+                "English terms with quotations",
+                "English uncountable nouns",
+                "Entries with translation boxes",
+                "Mandarin terms with redundant transliterations",
+                "Pages with 7 entries",
+                "Persian terms with non-redundant manual transliterations",
+                "Terms with Abkhaz translations",
+                "Terms with Acehnese translations",
+                "Terms with Afrikaans translations",
+                "Terms with Albanian translations",
+                "Terms with Amharic translations",
+                "Terms with Arabic translations",
+                "Terms with Armenian translations",
+                "Terms with Assamese translations",
+                "Terms with Assyrian Neo-Aramaic translations",
+                "Terms with Asturian translations",
+                "Terms with Azerbaijani translations",
+                "Terms with Bashkir translations",
+                "Terms with Basque translations",
+                "Terms with Belarusian translations",
+                "Terms with Bengali translations",
+                "Terms with Breton translations",
+                "Terms with Bulgarian translations",
+                "Terms with Burmese translations",
+                "Terms with Buryat translations",
+                "Terms with Cantonese translations",
+                "Terms with Carpathian Rusyn translations",
+                "Terms with Catalan translations",
+                "Terms with Chechen translations",
+                "Terms with Chuvash translations",
+                "Terms with Corsican translations",
+                "Terms with Crimean Tatar translations",
+                "Terms with Czech translations",
+                "Terms with Danish translations",
+                "Terms with Dhivehi translations",
+                "Terms with Dutch Low Saxon translations",
+                "Terms with Dutch translations",
+                "Terms with Dzongkha translations",
+                "Terms with Esperanto translations",
+                "Terms with Estonian translations",
+                "Terms with Farefare translations",
+                "Terms with Faroese translations",
+                "Terms with Finnish translations",
+                "Terms with French translations",
+                "Terms with Friulian translations",
+                "Terms with Galician translations",
+                "Terms with Georgian translations",
+                "Terms with German Low German translations",
+                "Terms with German translations",
+                "Terms with Greek translations",
+                "Terms with Gujarati translations",
+                "Terms with Hausa translations",
+                "Terms with Hawaiian translations",
+                "Terms with Hebrew translations",
+                "Terms with Hijazi Arabic translations",
+                "Terms with Hindi translations",
+                "Terms with Hungarian translations",
+                "Terms with Icelandic translations",
+                "Terms with Ido translations",
+                "Terms with Indonesian translations",
+                "Terms with Irish translations",
+                "Terms with Italian translations",
+                "Terms with Japanese translations",
+                "Terms with Kannada translations",
+                "Terms with Kashubian translations",
+                "Terms with Kazakh translations",
+                "Terms with Khmer translations",
+                "Terms with Korean translations",
+                "Terms with Kyrgyz translations",
+                "Terms with Lao translations",
+                "Terms with Latgalian translations",
+                "Terms with Latin translations",
+                "Terms with Latvian translations",
+                "Terms with Lithuanian translations",
+                "Terms with Livonian translations",
+                "Terms with Lower Sorbian translations",
+                "Terms with Macedonian translations",
+                "Terms with Malay translations",
+                "Terms with Malayalam translations",
+                "Terms with Maltese translations",
+                "Terms with Mandarin translations",
+                "Terms with Maori translations",
+                "Terms with Marathi translations",
+                "Terms with Mongolian translations",
+                "Terms with Navajo translations",
+                "Terms with Nepali translations",
+                "Terms with Norman translations",
+                "Terms with Northern Kurdish translations",
+                "Terms with Northern Sami translations",
+                "Terms with Norwegian Bokmål translations",
+                "Terms with Norwegian Nynorsk translations",
+                "Terms with Occitan translations",
+                "Terms with Odia translations",
+                "Terms with Ossetian translations",
+                "Terms with Pashto translations",
+                "Terms with Pennsylvania German translations",
+                "Terms with Persian translations",
+                "Terms with Polish translations",
+                "Terms with Portuguese translations",
+                "Terms with Punjabi translations",
+                "Terms with Romanian translations",
+                "Terms with Russian translations",
+                "Terms with Samogitian translations",
+                "Terms with Scots translations",
+                "Terms with Serbo-Croatian translations",
+                "Terms with Silesian translations",
+                "Terms with Sinhalese translations",
+                "Terms with Slovak translations",
+                "Terms with Slovene translations",
+                "Terms with Spanish translations",
+                "Terms with Swedish translations",
+                "Terms with Tagalog translations",
+                "Terms with Tajik translations",
+                "Terms with Tamil translations",
+                "Terms with Tatar translations",
+                "Terms with Telugu translations",
+                "Terms with Thai translations",
+                "Terms with Tibetan translations",
+                "Terms with Tigrinya translations",
+                "Terms with Turkish translations",
+                "Terms with Turkmen translations",
+                "Terms with Ukrainian translations",
+                "Terms with Upper Sorbian translations",
+                "Terms with Urdu translations",
+                "Terms with Uyghur translations",
+                "Terms with Uzbek translations",
+                "Terms with Vietnamese translations",
+                "Terms with Volapük translations",
+                "Terms with Võro translations",
+                "Terms with Welsh translations",
+                "Terms with West Frisian translations",
+                "Terms with Wu translations",
+                "Terms with Yakut translations",
+                "Terms with Yiddish translations",
+                "Terms with Yoruba translations",
+                "en:Countries",
+                "en:Countries in Europe",
+                "en:Latvia"
+            ],
+            "synonyms": [
+                {
+                    "word": "Lettland"
+                }
+            ],
+            "glosses": [
+                "A country in North Eastern Europe. Official name: Republic of Latvia."
+            ],
+            "wikipedia": [
+                "Latvia"
+            ]
+        }
+    ],
+    "pos": "name",
+    "head_templates": [
+        {
+            "name": "en-proper noun",
+            "args": {},
+            "expansion": "Latvia"
+        }
+    ],
+    "related": [
+        {
+            "word": "Latvian"
+        },
+        {
+            "word": "Latvian SSR"
+        },
+        {
+            "word": "Lettish"
+        },
+        {
+            "topics": [
+                "countries-of-Europe",
+                "countries",
+                "geography",
+                "natural-sciences"
+            ],
+            "word": "country of Europe"
+        },
+        {
+            "word": "Albania"
+        },
+        {
+            "word": "Andorra"
+        },
+        {
+            "word": "Armenia"
+        },
+        {
+            "word": "Austria"
+        },
+        {
+            "word": "Azerbaijan"
+        },
+        {
+            "word": "Belarus"
+        },
+        {
+            "word": "Belgium"
+        },
+        {
+            "word": "Bosnia and Herzegovina"
+        },
+        {
+            "word": "Bulgaria"
+        },
+        {
+            "word": "Croatia"
+        },
+        {
+            "word": "Cyprus"
+        },
+        {
+            "tags": [
+                "Czech-Republic"
+            ],
+            "word": "Czechia"
+        },
+        {
+            "word": "Denmark"
+        },
+        {
+            "word": "Estonia"
+        },
+        {
+            "word": "Finland"
+        },
+        {
+            "word": "France"
+        },
+        {
+            "word": "Georgia"
+        },
+        {
+            "word": "Germany"
+        },
+        {
+            "word": "Greece"
+        },
+        {
+            "word": "Hungary"
+        },
+        {
+            "word": "Iceland"
+        },
+        {
+            "word": "Ireland"
+        },
+        {
+            "word": "Italy"
+        },
+        {
+            "word": "Kazakhstan"
+        },
+        {
+            "word": "Liechtenstein"
+        },
+        {
+            "word": "Lithuania"
+        },
+        {
+            "word": "Luxembourg"
+        },
+        {
+            "word": "Malta"
+        },
+        {
+            "word": "Moldova"
+        },
+        {
+            "word": "Monaco"
+        },
+        {
+            "word": "Montenegro"
+        },
+        {
+            "word": "Netherlands"
+        },
+        {
+            "word": "North Macedonia"
+        },
+        {
+            "word": "Norway"
+        },
+        {
+            "word": "Poland"
+        },
+        {
+            "word": "Portugal"
+        },
+        {
+            "word": "Romania"
+        },
+        {
+            "word": "Russia"
+        },
+        {
+            "word": "San Marino"
+        },
+        {
+            "word": "Serbia"
+        },
+        {
+            "word": "Slovakia"
+        },
+        {
+            "word": "Slovenia"
+        },
+        {
+            "word": "Spain"
+        },
+        {
+            "word": "Sweden"
+        },
+        {
+            "word": "Switzerland"
+        },
+        {
+            "word": "Turkey"
+        },
+        {
+            "word": "Ukraine"
+        },
+        {
+            "word": "United Kingdom"
+        },
+        {
+            "word": "Vatican City"
+        }
+    ],
+    "translations": [
+        {
+            "lang": "Abkhaz",
+            "code": "ab",
+            "sense": "country",
+            "roman": "Latʼvja",
+            "word": "Латвиа"
+        },
+        {
+            "lang": "Acehnese",
+            "code": "ace",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Afrikaans",
+            "code": "af",
+            "sense": "country",
+            "word": "Letland"
+        },
+        {
+            "lang": "Albanian",
+            "code": "sq",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letoni"
+        },
+        {
+            "lang": "Albanian",
+            "code": "sq",
+            "sense": "country",
+            "tags": [
+                "definite",
+                "feminine"
+            ],
+            "word": "Letonia"
+        },
+        {
+            "lang": "Amharic",
+            "code": "am",
+            "sense": "country",
+            "roman": "latviya",
+            "word": "ላትቪያ"
+        },
+        {
+            "lang": "Arabic",
+            "code": "ar",
+            "sense": "country",
+            "roman": "lātfiyā",
+            "tags": [
+                "feminine"
+            ],
+            "word": "لَاتْفِيَا"
+        },
+        {
+            "lang": "Arabic",
+            "code": "acw",
+            "tags": [
+                "Hijazi-Arabic",
+                "feminine"
+            ],
+            "sense": "country",
+            "roman": "lātfiya, lātviya",
+            "word": "لاتفيا"
+        },
+        {
+            "lang": "Armenian",
+            "code": "hy",
+            "sense": "country",
+            "roman": "Latvia",
+            "word": "Լատվիա"
+        },
+        {
+            "lang": "Assamese",
+            "code": "as",
+            "sense": "country",
+            "roman": "latbhia",
+            "word": "লাটভিয়া"
+        },
+        {
+            "lang": "Assyrian Neo-Aramaic",
+            "code": "aii",
+            "sense": "country",
+            "roman": "Lātviya",
+            "tags": [
+                "feminine"
+            ],
+            "word": "ܠܲܬܒ݂ܝܼܵܐ"
+        },
+        {
+            "lang": "Asturian",
+            "code": "ast",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letonia"
+        },
+        {
+            "lang": "Azerbaijani",
+            "code": "az",
+            "sense": "country",
+            "word": "Latviya"
+        },
+        {
+            "lang": "Bashkir",
+            "code": "ba",
+            "sense": "country",
+            "roman": "Latviya",
+            "word": "Латвия"
+        },
+        {
+            "lang": "Basque",
+            "code": "eu",
+            "sense": "country",
+            "word": "Letonia"
+        },
+        {
+            "lang": "Belarusian",
+            "code": "be",
+            "sense": "country",
+            "roman": "Látvija",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Ла́твія"
+        },
+        {
+            "lang": "Bengali",
+            "code": "bn",
+            "sense": "country",
+            "roman": "latbhiẏa",
+            "word": "লাতভিয়া"
+        },
+        {
+            "lang": "Breton",
+            "code": "br",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Bulgarian",
+            "code": "bg",
+            "sense": "country",
+            "roman": "Látvija",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Ла́твия"
+        },
+        {
+            "lang": "Burmese",
+            "code": "my",
+            "sense": "country",
+            "roman": "latbiya",
+            "word": "လတ်ဗီယာ"
+        },
+        {
+            "lang": "Buryat",
+            "code": "bua",
+            "sense": "country",
+            "roman": "Latvi",
+            "word": "Латви"
+        },
+        {
+            "lang": "Carpathian Rusyn",
+            "code": "rue",
+            "sense": "country",
+            "roman": "Látvija",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Ла́твія"
+        },
+        {
+            "lang": "Catalan",
+            "code": "ca",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letònia"
+        },
+        {
+            "lang": "Chechen",
+            "code": "ce",
+            "sense": "country",
+            "roman": "Latʷi",
+            "word": "Латви"
+        },
+        {
+            "lang": "Chinese Cantonese",
+            "code": "yue",
+            "sense": "country",
+            "word": "拉脫維亞"
+        },
+        {
+            "lang": "Chinese Cantonese",
+            "code": "yue",
+            "sense": "country",
+            "roman": "laai¹ tyut³ wai⁴ aa³",
+            "word": "拉脱维亚"
+        },
+        {
+            "lang": "Chinese Mandarin",
+            "code": "cmn",
+            "sense": "country",
+            "word": "拉脫維亞"
+        },
+        {
+            "lang": "Chinese Mandarin",
+            "code": "cmn",
+            "sense": "country",
+            "roman": "Lātuōwéiyà",
+            "word": "拉脱维亚"
+        },
+        {
+            "lang": "Wu Chinese",
+            "code": "wuu",
+            "sense": "country",
+            "word": "拉脫維亞"
+        },
+        {
+            "lang": "Wu Chinese",
+            "code": "wuu",
+            "sense": "country",
+            "roman": "¹la-theq-vi-ia",
+            "word": "拉脱维亚"
+        },
+        {
+            "lang": "Chuvash",
+            "code": "cv",
+            "sense": "country",
+            "roman": "Latvi",
+            "word": "Латви"
+        },
+        {
+            "lang": "Corsican",
+            "code": "co",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Lettonia"
+        },
+        {
+            "lang": "Crimean Tatar",
+            "code": "crh",
+            "sense": "country",
+            "word": "Latviya"
+        },
+        {
+            "lang": "Czech",
+            "code": "cs",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Lotyšsko"
+        },
+        {
+            "lang": "Danish",
+            "code": "da",
+            "sense": "country",
+            "word": "Letland"
+        },
+        {
+            "lang": "Dhivehi",
+            "code": "dv",
+            "sense": "country",
+            "roman": "leṭuviā",
+            "word": "ލެޓުވިއާ"
+        },
+        {
+            "lang": "Dutch",
+            "code": "nl",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Letland"
+        },
+        {
+            "lang": "Dzongkha",
+            "code": "dz",
+            "sense": "country",
+            "roman": "leṭi bi ya",
+            "word": "ལེཊི་བི་ཡ"
+        },
+        {
+            "lang": "Esperanto",
+            "code": "eo",
+            "sense": "country",
+            "word": "Latvio"
+        },
+        {
+            "lang": "Esperanto",
+            "code": "eo",
+            "sense": "country",
+            "word": "Latvujo"
+        },
+        {
+            "lang": "Estonian",
+            "code": "et",
+            "sense": "country",
+            "word": "Läti"
+        },
+        {
+            "lang": "Farefare",
+            "code": "gur",
+            "sense": "country",
+            "word": "Latgɔ"
+        },
+        {
+            "lang": "Faroese",
+            "code": "fo",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Lettland"
+        },
+        {
+            "lang": "Finnish",
+            "code": "fi",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Finnish",
+            "code": "fi",
+            "sense": "country",
+            "word": "Lätti"
+        },
+        {
+            "lang": "French",
+            "code": "fr",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Lettonie"
+        },
+        {
+            "lang": "Friulian",
+            "code": "fur",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letonie"
+        },
+        {
+            "lang": "Galician",
+            "code": "gl",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letonia"
+        },
+        {
+            "lang": "Georgian",
+            "code": "ka",
+            "sense": "country",
+            "roman": "laṭvia",
+            "word": "ლატვია"
+        },
+        {
+            "lang": "German",
+            "code": "de",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Lettland"
+        },
+        {
+            "lang": "Greek",
+            "code": "el",
+            "sense": "country",
+            "roman": "Lettonía",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Λεττονία"
+        },
+        {
+            "lang": "Gujarati",
+            "code": "gu",
+            "sense": "country",
+            "roman": "lāṭviyā",
+            "word": "લાટવિયા"
+        },
+        {
+            "lang": "Hausa",
+            "code": "ha",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Hausa",
+            "code": "ha",
+            "sense": "country",
+            "word": "Latibiya"
+        },
+        {
+            "lang": "Hawaiian",
+            "code": "haw",
+            "sense": "country",
+            "word": "Lakawia"
+        },
+        {
+            "lang": "Hebrew",
+            "code": "he",
+            "sense": "country",
+            "roman": "lat'viyá",
+            "tags": [
+                "feminine"
+            ],
+            "word": "לטוויה \\ לַטְוִיָּה"
+        },
+        {
+            "lang": "Hindi",
+            "code": "hi",
+            "sense": "country",
+            "roman": "lātviyā",
+            "tags": [
+                "masculine"
+            ],
+            "word": "लातविया"
+        },
+        {
+            "lang": "Hindi",
+            "code": "hi",
+            "sense": "country",
+            "roman": "lāṭviyā",
+            "tags": [
+                "masculine"
+            ],
+            "word": "लाटविया"
+        },
+        {
+            "lang": "Hungarian",
+            "code": "hu",
+            "sense": "country",
+            "word": "Lettország"
+        },
+        {
+            "lang": "Icelandic",
+            "code": "is",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Lettland"
+        },
+        {
+            "lang": "Ido",
+            "code": "io",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Indonesian",
+            "code": "id",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Irish",
+            "code": "ga",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "An Laitvia"
+        },
+        {
+            "lang": "Irish",
+            "code": "ga",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Poblacht na Laitvia"
+        },
+        {
+            "lang": "Italian",
+            "code": "it",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Lettonia"
+        },
+        {
+            "lang": "Japanese",
+            "code": "ja",
+            "sense": "country",
+            "roman": "Ratobia",
+            "word": "ラトビア"
+        },
+        {
+            "lang": "Japanese",
+            "code": "ja",
+            "sense": "country",
+            "roman": "Ratovia",
+            "word": "ラトヴィア"
+        },
+        {
+            "lang": "Kannada",
+            "code": "kn",
+            "sense": "country",
+            "roman": "lāṭviya",
+            "word": "ಲಾಟ್ವಿಯ"
+        },
+        {
+            "lang": "Kashubian",
+            "code": "csb",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Łotwa"
+        },
+        {
+            "lang": "Kazakh",
+            "code": "kk",
+            "sense": "country",
+            "roman": "Latviä",
+            "word": "Латвия"
+        },
+        {
+            "lang": "Khmer",
+            "code": "km",
+            "sense": "country",
+            "roman": "leetounii",
+            "word": "ឡេតូនី"
+        },
+        {
+            "lang": "Korean",
+            "code": "ko",
+            "sense": "country",
+            "roman": "Rateubia",
+            "word": "라트비아"
+        },
+        {
+            "lang": "Korean",
+            "code": "ko",
+            "sense": "country",
+            "tags": [
+                "North-Korea"
+            ],
+            "roman": "Ratteubiya",
+            "word": "라뜨비야"
+        },
+        {
+            "lang": "Northern Kurdish",
+            "code": "kmr",
+            "sense": "country",
+            "word": "Letonya"
+        },
+        {
+            "lang": "Kyrgyz",
+            "code": "ky",
+            "sense": "country",
+            "roman": "Latviya",
+            "word": "Латвия"
+        },
+        {
+            "lang": "Lao",
+            "code": "lo",
+            "sense": "country",
+            "roman": "lǣt tō nī",
+            "word": "ແລດໂຕນີ"
+        },
+        {
+            "lang": "Lao",
+            "code": "lo",
+            "sense": "country",
+            "roman": "lat wīa",
+            "word": "ລັດເວຍ"
+        },
+        {
+            "lang": "Latgalian",
+            "code": "ltg",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Latveja"
+        },
+        {
+            "lang": "Latin",
+            "code": "la",
+            "sense": "country",
+            "tags": [
+                "New-Latin",
+                "feminine"
+            ],
+            "word": "Lettonia"
+        },
+        {
+            "lang": "Latvian",
+            "code": "lv",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Latvija"
+        },
+        {
+            "lang": "Lithuanian",
+            "code": "lt",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Latvija"
+        },
+        {
+            "lang": "Samogitian",
+            "code": "sgs",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Latvėjė"
+        },
+        {
+            "lang": "Livonian",
+            "code": "liv",
+            "sense": "country",
+            "word": "Lețmō"
+        },
+        {
+            "lang": "Dutch Low Saxon",
+            "code": "nds-nl",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Letlaand"
+        },
+        {
+            "lang": "Low German",
+            "code": "nds-de",
+            "tags": [
+                "German-Low-German",
+                "neuter"
+            ],
+            "sense": "country",
+            "word": "Lettland"
+        },
+        {
+            "lang": "Macedonian",
+            "code": "mk",
+            "sense": "country",
+            "roman": "Letonija",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Летонија"
+        },
+        {
+            "lang": "Malay",
+            "code": "ms",
+            "sense": "country",
+            "word": "Latvia"
+        },
+        {
+            "lang": "Malayalam",
+            "code": "ml",
+            "sense": "country",
+            "roman": "lātviya",
+            "word": "ലാത്വിയ"
+        },
+        {
+            "lang": "Maltese",
+            "code": "mt",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "il-Latvja"
+        },
+        {
+            "lang": "Maori",
+            "code": "mi",
+            "sense": "country",
+            "word": "Rāwhia"
+        },
+        {
+            "lang": "Marathi",
+            "code": "mr",
+            "sense": "country",
+            "roman": "lāṭviyā",
+            "word": "लाटविया"
+        },
+        {
+            "lang": "Mongolian",
+            "code": "mn",
+            "tags": [
+                "Cyrillic"
+            ],
+            "sense": "country",
+            "roman": "Latvi",
+            "word": "Латви"
+        },
+        {
+            "lang": "Mongolian",
+            "code": "mn",
+            "tags": [
+                "Mongolian"
+            ],
+            "sense": "country",
+            "roman": "latwi",
+            "word": "ᠯᠠᠲ᠋ᠸᠢ"
+        },
+        {
+            "lang": "Navajo",
+            "code": "nv",
+            "sense": "country",
+            "word": "Dahńdzílgaiʼnii Bikéyah"
+        },
+        {
+            "lang": "Nepali",
+            "code": "ne",
+            "sense": "country",
+            "roman": "lātbhiyā",
+            "word": "लात्भिया"
+        },
+        {
+            "lang": "Norman",
+            "code": "nrf",
+            "sense": "country",
+            "tags": [
+                "Jersey",
+                "feminine"
+            ],
+            "word": "Lettonnie"
+        },
+        {
+            "lang": "Norman",
+            "code": "nrf",
+            "sense": "country",
+            "tags": [
+                "continental-Normandy"
+            ],
+            "word": "Létonîn"
+        },
+        {
+            "lang": "Northern Sami",
+            "code": "se",
+            "sense": "country",
+            "word": "Látvia"
+        },
+        {
+            "lang": "Norwegian Bokmål",
+            "code": "nb",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Latvia"
+        },
+        {
+            "lang": "Norwegian Nynorsk",
+            "code": "nn",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Latvia"
+        },
+        {
+            "lang": "Occitan",
+            "code": "oc",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letònia"
+        },
+        {
+            "lang": "Odia",
+            "code": "or",
+            "sense": "country",
+            "roman": "lāṭabhiā",
+            "word": "ଲାଟଭିଆ"
+        },
+        {
+            "lang": "Ossetian",
+            "code": "os",
+            "sense": "country",
+            "roman": "Latvi",
+            "word": "Латви"
+        },
+        {
+            "lang": "Pashto",
+            "code": "ps",
+            "sense": "country",
+            "roman": "litonyā",
+            "tags": [
+                "feminine"
+            ],
+            "word": "ليتونيا"
+        },
+        {
+            "lang": "Pashto",
+            "code": "ps",
+            "sense": "country",
+            "roman": "latwyā",
+            "tags": [
+                "feminine"
+            ],
+            "word": "لتويا"
+        },
+        {
+            "lang": "Pennsylvania German",
+            "code": "pdc",
+            "sense": "country",
+            "word": "Lettlond"
+        },
+        {
+            "lang": "Dari",
+            "code": "prs",
+            "sense": "country",
+            "roman": "lātwiyā",
+            "word": "لَاتْوِیَا"
+        },
+        {
+            "lang": "Iranian Persian",
+            "code": "fa-ira",
+            "sense": "country",
+            "roman": "letoni",
+            "word": "لِتونی"
+        },
+        {
+            "lang": "Iranian Persian",
+            "code": "fa-ira",
+            "sense": "country",
+            "roman": "lâtviyâ",
+            "word": "لاتْوِیا"
+        },
+        {
+            "lang": "Iranian Persian",
+            "code": "fa-ira",
+            "sense": "country",
+            "roman": "letland",
+            "word": "لِتْلَنْد"
+        },
+        {
+            "lang": "Polish",
+            "code": "pl",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Łotwa"
+        },
+        {
+            "lang": "Brazilian Portuguese",
+            "code": "pt",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letônia"
+        },
+        {
+            "lang": "European Portuguese",
+            "code": "pt",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letónia"
+        },
+        {
+            "lang": "Punjabi",
+            "code": "pa",
+            "tags": [
+                "Gurmukhi",
+                "masculine"
+            ],
+            "sense": "country",
+            "roman": "lātvīā",
+            "word": "ਲਾਤਵੀਆ"
+        },
+        {
+            "lang": "Romanian",
+            "code": "ro",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letonia"
+        },
+        {
+            "lang": "Russian",
+            "code": "ru",
+            "sense": "country",
+            "roman": "Látvija",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Ла́твия"
+        },
+        {
+            "lang": "Scots",
+            "code": "sco",
+            "sense": "country",
+            "word": "Latvie"
+        },
+        {
+            "lang": "Serbo-Croatian",
+            "code": "sh",
+            "tags": [
+                "Cyrillic",
+                "feminine"
+            ],
+            "sense": "country",
+            "word": "Лѐто̄нија"
+        },
+        {
+            "lang": "Serbo-Croatian",
+            "code": "sh",
+            "tags": [
+                "Cyrillic",
+                "feminine"
+            ],
+            "sense": "country",
+            "word": "Ла̀твија"
+        },
+        {
+            "lang": "Serbo-Croatian",
+            "code": "sh",
+            "tags": [
+                "Roman",
+                "feminine"
+            ],
+            "sense": "country",
+            "word": "Lètōnija"
+        },
+        {
+            "lang": "Serbo-Croatian",
+            "code": "sh",
+            "tags": [
+                "Roman",
+                "feminine"
+            ],
+            "sense": "country",
+            "word": "Làtvija"
+        },
+        {
+            "lang": "Silesian",
+            "code": "szl",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Łotwa"
+        },
+        {
+            "lang": "Sinhalese",
+            "code": "si",
+            "sense": "country",
+            "roman": "læṭwiyāwa",
+            "word": "ලැට්වියාව"
+        },
+        {
+            "lang": "Slovak",
+            "code": "sk",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Lotyšsko"
+        },
+        {
+            "lang": "Slovene",
+            "code": "sl",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Látvija"
+        },
+        {
+            "lang": "Lower Sorbian",
+            "code": "dsb",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letiska"
+        },
+        {
+            "lang": "Upper Sorbian",
+            "code": "hsb",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letiska"
+        },
+        {
+            "lang": "Spanish",
+            "code": "es",
+            "sense": "country",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Letonia"
+        },
+        {
+            "lang": "Swedish",
+            "code": "sv",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Lettland"
+        },
+        {
+            "lang": "Tagalog",
+            "code": "tl",
+            "sense": "country",
+            "word": "Letonya"
+        },
+        {
+            "lang": "Tagalog",
+            "code": "tl",
+            "sense": "country",
+            "word": "Latbiya"
+        },
+        {
+            "lang": "Tajik",
+            "code": "tg",
+            "sense": "country",
+            "roman": "Latviya",
+            "word": "Латвия"
+        },
+        {
+            "lang": "Tamil",
+            "code": "ta",
+            "sense": "country",
+            "roman": "lātviyā",
+            "word": "லாத்வியா"
+        },
+        {
+            "lang": "Tatar",
+            "code": "tt",
+            "sense": "country",
+            "roman": "Latwiyä",
+            "word": "Латвия"
+        },
+        {
+            "lang": "Telugu",
+            "code": "te",
+            "sense": "country",
+            "roman": "lāṭviyā",
+            "word": "లాట్వియా"
+        },
+        {
+            "lang": "Thai",
+            "code": "th",
+            "sense": "country",
+            "roman": "lát-wiia",
+            "word": "ลัตเวีย"
+        },
+        {
+            "lang": "Tibetan",
+            "code": "bo",
+            "sense": "country",
+            "roman": "la ṭa wiy",
+            "word": "ལ་ཊ་ཝིཡ"
+        },
+        {
+            "lang": "Tigrinya",
+            "code": "ti",
+            "sense": "country",
+            "roman": "latviya",
+            "word": "ላትቪያ"
+        },
+        {
+            "lang": "Turkish",
+            "code": "tr",
+            "sense": "country",
+            "word": "Letonya"
+        },
+        {
+            "lang": "Turkmen",
+            "code": "tk",
+            "sense": "country",
+            "word": "Latwiýa"
+        },
+        {
+            "lang": "Ukrainian",
+            "code": "uk",
+            "sense": "country",
+            "roman": "Látvija",
+            "tags": [
+                "feminine"
+            ],
+            "word": "Ла́твія"
+        },
+        {
+            "lang": "Urdu",
+            "code": "ur",
+            "sense": "country",
+            "roman": "laṭviyā",
+            "tags": [
+                "masculine"
+            ],
+            "word": "لَٹْوِیا"
+        },
+        {
+            "lang": "Uyghur",
+            "code": "ug",
+            "sense": "country",
+            "roman": "latwiye",
+            "word": "لاتۋىيە"
+        },
+        {
+            "lang": "Uzbek",
+            "code": "uz",
+            "sense": "country",
+            "word": "Latviya"
+        },
+        {
+            "lang": "Vietnamese",
+            "code": "vi",
+            "sense": "country",
+            "word": "Lát-vi-a"
+        },
+        {
+            "lang": "Volapük",
+            "code": "vo",
+            "sense": "country",
+            "word": "Latviyän"
+        },
+        {
+            "lang": "Võro",
+            "code": "vro",
+            "sense": "country",
+            "word": "Läti"
+        },
+        {
+            "lang": "Welsh",
+            "code": "cy",
+            "sense": "country",
+            "word": "Latfia"
+        },
+        {
+            "lang": "West Frisian",
+            "code": "fy",
+            "sense": "country",
+            "tags": [
+                "neuter"
+            ],
+            "word": "Letlân"
+        },
+        {
+            "lang": "Yakut",
+            "code": "sah",
+            "sense": "country",
+            "roman": "Latviya",
+            "word": "Латвия"
+        },
+        {
+            "lang": "Yiddish",
+            "code": "yi",
+            "sense": "country",
+            "roman": "letland",
+            "tags": [
+                "neuter"
+            ],
+            "word": "לעטלאַנד"
+        },
+        {
+            "lang": "Yiddish",
+            "code": "yi",
+            "sense": "country",
+            "roman": "latvye",
+            "tags": [
+                "feminine"
+            ],
+            "word": "לאַטוויע"
+        },
+        {
+            "lang": "Yoruba",
+            "code": "yo",
+            "sense": "country",
+            "word": "Latifia"
+        }
+    ],
+    "sounds": [
+        {
+            "tags": [
+                "UK",
+                "US"
+            ],
+            "ipa": "/ˈlæt.vi.ə/"
+        },
+        {
+            "tags": [
+                "UK",
+                "US"
+            ],
+            "ipa": "/ˈlɑːt.vi.ə/"
+        },
+        {
+            "audio": "en-us-Latvia.ogg",
+            "ogg_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/En-us-Latvia.ogg",
+            "mp3_url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/9e/En-us-Latvia.ogg/En-us-Latvia.ogg.mp3"
+        }
+    ],
+    "etymology_text": "Borrowed from Latvian Latvija.",
+    "etymology_templates": [
+        {
+            "name": "bor",
+            "args": {
+                "1": "en",
+                "2": "lv",
+                "3": "Latvija"
+            },
+            "expansion": "Latvian Latvija"
+        }
+    ],
+    "word": "Latvia",
+    "lang": "English",
+    "lang_code": "en"
+}
