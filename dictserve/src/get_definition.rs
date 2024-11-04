@@ -34,9 +34,13 @@ pub async fn get_definition(
     let label = [("language", payload.language.to_nice_format())];
     counter!("dictionary_query_language", &label).increment(1);
 
+    let t_start = Instant::now();
     let dict_element = state
         .dictionary_store
         .query(payload.language.clone(), &payload.word);
+    let t_taken = t_start.elapsed();
+
+    histogram!("dict_get_item_duration_seconds", &[] as NoLabel).record(t_taken.as_secs_f64());
 
     match dict_element {
         Some(element) => {

@@ -226,17 +226,19 @@ fn get_definitions(
     let senses = json.get("senses").and_then(|senses| senses.as_array())?;
 
     for sense in senses {
-        let tags = sense
-            .get("tags")
-            .and_then(|t| t.as_array())
-            .map_or(Vec::new(), |tag_array| {
-                tag_array
-                    .iter()
-                    .filter_map(|tag| tag.as_str())
-                    .filter(|t| !FILTER_TAGS.contains(t))
-                    .map(|s| uppercase_first_character_latin(s)) // makes it into a String as a bonus
-                    .collect()
-            });
+        let mut tags =
+            sense
+                .get("tags")
+                .and_then(|t| t.as_array())
+                .map_or(Vec::new(), |tag_array| {
+                    tag_array
+                        .iter()
+                        .filter_map(|tag| tag.as_str())
+                        .filter(|t| !FILTER_TAGS.contains(t))
+                        .map(|s| uppercase_first_character_latin(s)) // makes it into a String as a bonus
+                        .collect()
+                });
+        tags.sort();
 
         let gloss = sense
             .get("glosses")
@@ -266,6 +268,13 @@ fn get_definitions(
     Some(out)
 }
 
+const WORD_SET_EXCEPTIONS: [&'static str; 63] = [
+    "a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "j",
+    "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S",
+    "t", "T", "u", "U", "v", "V", "w", "W", "x", "X", "y", "Y", "z", "Z", "0", "1", "2", "3", "4",
+    "5", "6", "7", "8", "9", "not",
+];
+
 fn hyperlink_text(
     text: String,
     word_set: &HashSet<(String, TargetLanguage)>,
@@ -290,7 +299,9 @@ fn hyperlink_text(
                 current_word.push(c);
             } else {
                 if !current_word.is_empty() {
-                    if word_set.contains(&(current_word.clone(), language.clone())) {
+                    if word_set.contains(&(current_word.clone(), language.clone()))
+                        && !WORD_SET_EXCEPTIONS.contains(&current_word.as_str())
+                    {
                         result.push(HyperlinkedText::Link(current_word.clone()));
                     } else {
                         result.push(HyperlinkedText::Plain(current_word.clone()));
