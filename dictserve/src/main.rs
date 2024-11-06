@@ -53,8 +53,6 @@ async fn main() {
 
     let _ = tokio::spawn(task);
 
-    debug!("Reconciliation task started");
-
     info!("Creating in-memory dictionary...");
     let dict_store = dictionary::DictionaryStore::from_elements_dump(&config.dump_path);
 
