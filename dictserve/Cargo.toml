@@ -29,4 +29,4 @@ bincode = "1.3"
 rayon = "1.7"
 
 libdictdefinition = { path = "../libdictdefinition/" }
-Languages = { path = "../../nuenki-relay-sched/LanguagesStoreRs" }
+Languages = { path = "../../nuenki-languages/LanguagesStoreRs" }
