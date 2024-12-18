@@ -39,7 +39,7 @@ impl DictionaryStore {
 
         // Use rayon to parallelize insertion
         elements.into_par_iter().for_each(|element| {
-            store.insert((element.lang.clone(), element.word.clone()), element);
+            store.insert((element.lang.clone(), element.key.clone()), element);
         });
 
         let time_taken = start_t.elapsed();
@@ -52,18 +52,18 @@ impl DictionaryStore {
         Ok(Self { datastore: store })
     }
 
-    pub fn query(&self, lang: TargetLanguage, word: &str) -> Option<DictionaryElementData> {
-        let key = (lang.clone(), word.to_string());
+    pub fn query(&self, lang: TargetLanguage, key: &str) -> Option<DictionaryElementData> {
+        let search_key = (lang.clone(), key.to_string());
 
-        // Try querying with the original word
-        if let Some(compressed_wrapper) = self.datastore.get(&key) {
+        // Try querying with the original key
+        if let Some(compressed_wrapper) = self.datastore.get(&search_key) {
             return Some(self.decompress_element(compressed_wrapper.value()));
         }
 
-        let all_lowercase = word.to_lowercase();
+        let all_lowercase = key.to_lowercase();
 
-        // If not found and the word isn't all lowercase, try again with the lowercase word
-        if word != all_lowercase {
+        // If not found and the key isn't all lowercase, try again with the lowercase key
+        if key != all_lowercase {
             let lower_key = (lang.clone(), all_lowercase);
             if let Some(compressed_wrapper) = self.datastore.get(&lower_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
@@ -71,8 +71,8 @@ impl DictionaryStore {
         }
 
         // now try all lowercase with the first character uppercase
-        let with_first = lowercase_with_first_uppercase(word);
-        if with_first != word {
+        let with_first = lowercase_with_first_uppercase(key);
+        if with_first != key {
             let with_key = (lang, with_first);
             if let Some(compressed_wrapper) = self.datastore.get(&with_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));

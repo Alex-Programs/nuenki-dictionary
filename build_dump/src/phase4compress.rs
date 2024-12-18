@@ -21,7 +21,7 @@ pub fn compress_dictionary_data(
                 let compressed = encode_all(&encoded[..], COMPRESS_LVL).unwrap();
 
                 CompressedDictionaryElementWrapper {
-                    word: element.word.clone(),
+                    key: element.key.clone(),
                     lang: element.lang.clone(),
                     compressed_data: compressed,
                 }

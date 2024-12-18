@@ -13,19 +13,22 @@ pub enum HyperlinkedText {
     Link(String),
 }
 
+// In libdictdefinition.rs
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DictionaryElementData {
+    pub key: String,
     pub word: String,
     pub lang: TargetLanguage,
     pub audio: Vec<String>,
     pub ipa: Option<String>,
     pub word_types: Vec<String>,
     pub definitions: Vec<Definition>,
+    pub dereferenced_text: Option<String>, // Add this line
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CompressedDictionaryElementWrapper {
-    pub word: String,
+    pub key: String,
     pub lang: TargetLanguage,
     pub compressed_data: Vec<u8>,
 }

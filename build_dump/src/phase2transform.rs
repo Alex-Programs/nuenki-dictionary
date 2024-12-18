@@ -123,12 +123,14 @@ fn process_json_entry(
     //let translation = get_english_translation(json);
 
     Some(DictionaryElementData {
+        key: word.clone(),
         word,
         lang: language,
         audio,
         ipa,
         word_types,
         definitions,
+        dereferenced_text: None,
     })
 }
 

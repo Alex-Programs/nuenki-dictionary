@@ -8,7 +8,7 @@ memmap2 = "0.9.5"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 
-Languages = { path = "../../nuenki-relay-sched/LanguagesStoreRs" }
+Languages = { path = "../../nuenki-languages/LanguagesStoreRs" }
 
 rayon = "1.7"
 
