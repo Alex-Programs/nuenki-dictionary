@@ -257,7 +257,7 @@ fn get_definitions(
                     Some(t) => t,
                     None => continue,
                 };
-                let as_string = as_str.to_string();
+                let as_string = solve_unopened_brackets(as_str.to_string());
 
                 out.push(Definition {
                     text: hyperlink_text(as_string, &word_set, &language),
@@ -268,6 +268,26 @@ fn get_definitions(
     }
 
     Some(out)
+}
+
+fn solve_unopened_brackets(text: String) -> String {
+    let bracket_pairs = [('(', ')'), ('[', ']'), ('{', '}')];
+
+    let opening_brackets = bracket_pairs.map(|x| x.0);
+
+    for char in text.chars() {
+        if opening_brackets.contains(&char) {
+            return text;
+        }
+
+        for (open, close) in bracket_pairs {
+            if char == close {
+                return format!("{}{}", open, text);
+            }
+        }
+    }
+
+    return text;
 }
 
 const WORD_SET_EXCEPTIONS: [&'static str; 63] = [
@@ -284,7 +304,7 @@ fn hyperlink_text(
 ) -> Vec<HyperlinkedText> {
     let mut result = Vec::new();
     let mut current_word = String::new();
-    let mut was_last_whitespace = false;
+    let mut was_last_filler = false;
 
     fn is_non_content(c: &char) -> bool {
         let also_prohibited = [
@@ -297,7 +317,7 @@ fn hyperlink_text(
 
     for c in text.chars() {
         if is_non_content(&c) {
-            if was_last_whitespace {
+            if was_last_filler {
                 current_word.push(c);
             } else {
                 if !current_word.is_empty() {
@@ -311,12 +331,14 @@ fn hyperlink_text(
                     current_word.clear();
 
                     current_word.push(c);
+                } else {
+                    current_word.push(c);
                 }
             }
 
-            was_last_whitespace = true;
+            was_last_filler = true;
         } else {
-            if was_last_whitespace {
+            if was_last_filler {
                 result.push(HyperlinkedText::Plain(current_word.clone()));
                 current_word.clear();
                 current_word.push(c);
@@ -324,7 +346,7 @@ fn hyperlink_text(
                 current_word.push(c);
             }
 
-            was_last_whitespace = false;
+            was_last_filler = false;
         }
     }
 
@@ -369,6 +391,29 @@ fn get_english_translation(json: &Value) -> Option<String> {
 mod tests {
     use super::*;
     use std::collections::HashSet;
+
+    #[test]
+    fn test_hyperlinking_removal() {
+        let start = "[the quick] brown fox;";
+        assert_eq!(
+            hyperlink_text(
+                start.to_string(),
+                &HashSet::<(String, TargetLanguage)>::new(),
+                &TargetLanguage::German
+            ),
+            vec![
+                HyperlinkedText::Plain("[".to_string()),
+                HyperlinkedText::Plain("the".to_string()),
+                HyperlinkedText::Plain(" ".to_string()),
+                HyperlinkedText::Plain("quick".to_string()),
+                HyperlinkedText::Plain("] ".to_string()),
+                HyperlinkedText::Plain("brown".to_string()),
+                HyperlinkedText::Plain(" ".to_string()),
+                HyperlinkedText::Plain("fox".to_string()),
+                HyperlinkedText::Plain(";".to_string())
+            ]
+        );
+    }
 
     #[test]
     fn test_hyperlink_single_word() {
@@ -491,5 +536,56 @@ mod tests {
             hyperlink_text(input, &word_set, &TargetLanguage::German),
             expected
         );
+    }
+
+    use super::solve_unopened_brackets;
+
+    #[test]
+    fn test_no_change() {
+        assert_eq!(solve_unopened_brackets("()".to_string()), "()".to_string());
+        assert_eq!(
+            solve_unopened_brackets("[abc]".to_string()),
+            "[abc]".to_string()
+        );
+        assert_eq!(
+            solve_unopened_brackets("{hello}".to_string()),
+            "{hello}".to_string()
+        );
+        assert_eq!(
+            solve_unopened_brackets(
+                "with accusative or dative] above, over (spatially)".to_string()
+            ),
+            "[with accusative or dative] above, over (spatially)".to_string()
+        );
+    }
+
+    #[test]
+    fn test_add_opening_bracket() {
+        assert_eq!(solve_unopened_brackets(")".to_string()), "()".to_string());
+        assert_eq!(solve_unopened_brackets("]".to_string()), "[]".to_string());
+        assert_eq!(solve_unopened_brackets("}".to_string()), "{}".to_string());
+    }
+
+    #[test]
+    fn test_mixed_characters() {
+        assert_eq!(
+            solve_unopened_brackets("}hello".to_string()),
+            "{}hello".to_string()
+        );
+        assert_eq!(
+            solve_unopened_brackets("]world".to_string()),
+            "[]world".to_string()
+        );
+        assert_eq!(
+            solve_unopened_brackets(")test".to_string()),
+            "()test".to_string()
+        );
+    }
+
+    #[test]
+    fn test_no_change_on_opening_bracket() {
+        assert_eq!(solve_unopened_brackets("(".to_string()), "(".to_string());
+        assert_eq!(solve_unopened_brackets("[".to_string()), "[".to_string());
+        assert_eq!(solve_unopened_brackets("{".to_string()), "{".to_string());
     }
 }

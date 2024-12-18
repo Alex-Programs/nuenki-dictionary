@@ -14,7 +14,7 @@ pub enum HyperlinkedText {
 }
 
 // In libdictdefinition.rs
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct DictionaryElementData {
     pub key: String,
     pub word: String,

@@ -153,3 +153,68 @@ mod tests {
         assert_eq!(parse_dereference(&input), expected);
     }
 }
+
+#[test]
+fn test_parse_dereference_no_of() {
+    let input = vec![
+        HyperlinkedText::Plain("example".to_string()),
+        HyperlinkedText::Plain("text".to_string()),
+    ];
+
+    let expected = None;
+    assert_eq!(parse_dereference(&input), expected);
+}
+
+#[test]
+fn test_parse_dereference_exceeds_limits() {
+    let input = vec![
+        HyperlinkedText::Plain("a".repeat(51)),
+        HyperlinkedText::Plain("of".to_string()),
+        HyperlinkedText::Link("word".to_string()),
+    ];
+
+    let expected = None;
+    assert_eq!(parse_dereference(&input), expected);
+}
+
+#[test]
+fn test_parse_dereference_complex_but_valid() {
+    let input = vec![
+        HyperlinkedText::Plain("past participle".to_string()),
+        HyperlinkedText::Plain(" ".to_string()),
+        HyperlinkedText::Plain("of".to_string()),
+        HyperlinkedText::Plain(" ".to_string()),
+        HyperlinkedText::Link("be".to_string()),
+    ];
+
+    let expected = Some(("past participle of".to_string(), "be".to_string()));
+    assert_eq!(parse_dereference(&input), expected);
+}
+
+#[test]
+fn test_count_whitespace_empty() {
+    let input = "";
+    let expected = 0;
+    assert_eq!(count_whitespace(input), expected);
+}
+
+#[test]
+fn test_count_whitespace_spaces_and_tabs() {
+    let input = "a b\tc  d";
+    let expected = 4; // 3 spaces + 1 tab
+    assert_eq!(count_whitespace(input), expected);
+}
+
+#[test]
+fn test_count_whitespace_no_whitespace() {
+    let input = "abcdef";
+    let expected = 0;
+    assert_eq!(count_whitespace(input), expected);
+}
+
+#[test]
+fn test_process_dereferences_empty() {
+    let input: Vec<DictionaryElementData> = vec![];
+    let expected: Vec<DictionaryElementData> = vec![];
+    assert_eq!(process_dereferences(input), expected);
+}
