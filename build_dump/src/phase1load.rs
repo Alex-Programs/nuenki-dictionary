@@ -40,7 +40,7 @@ pub fn build_word_set(input_path: &Path) -> std::io::Result<HashSet<(String, Tar
                 let json: Value = serde_json::from_str(line).ok()?;
                 let word = json.get("word")?.as_str()?.to_string();
                 let lang_code = json.get("lang_code")?.as_str()?;
-                let language = TargetLanguage::from_wiktionary_language_code(lang_code)?;
+                let language = TargetLanguage::from_wiktionary_language_code_n(lang_code)?;
                 Some((word, language))
             })
             .collect();

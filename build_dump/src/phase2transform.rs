@@ -1,6 +1,7 @@
 use memmap2::Mmap;
 use rayon::prelude::*;
 use serde_json::Value;
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -16,50 +17,54 @@ pub fn build_dictionary_data(
     input_path: &Path,
     word_set: &HashSet<(String, TargetLanguage)>,
 ) -> std::io::Result<Vec<DictionaryElementData>> {
-    let file = File::open(input_path)?;
-    let mmap = unsafe { Mmap::map(&file)? };
-    let mut reader = BufReader::new(&*mmap);
     let mut dictionary_data = Vec::new();
-    let mut batch = Vec::with_capacity(BATCH_SIZE);
-    let mut total_processed = 0;
-    let mut last_print = 0;
 
-    loop {
-        batch.clear();
-        for _ in 0..BATCH_SIZE {
-            let mut line = String::new();
-            match reader.read_line(&mut line) {
-                Ok(0) => break,
-                Ok(_) => batch.push(line),
-                Err(e) => return Err(e),
+    // separate scope to encourage deallocation
+    {
+        let file = File::open(input_path)?;
+        let mmap = unsafe { Mmap::map(&file)? };
+        let mut reader = BufReader::new(&*mmap);
+        let mut batch = Vec::with_capacity(BATCH_SIZE);
+        let mut total_processed = 0;
+        let mut last_print = 0;
+
+        loop {
+            batch.clear();
+            for _ in 0..BATCH_SIZE {
+                let mut line = String::new();
+                match reader.read_line(&mut line) {
+                    Ok(0) => break,
+                    Ok(_) => batch.push(line),
+                    Err(e) => return Err(e),
+                }
+            }
+
+            if batch.is_empty() {
+                break;
+            }
+
+            let batch_results: Vec<DictionaryElementData> = batch
+                .par_iter()
+                .filter_map(|line| {
+                    let json: Value = serde_json::from_str(line).ok()?;
+                    process_json_entry(&json, word_set)
+                })
+                .collect();
+
+            dictionary_data.extend(batch_results);
+            total_processed += batch.len();
+
+            if total_processed - last_print > 100000 {
+                println!("Processed {} entries for dictionary data", total_processed);
+                last_print = total_processed;
             }
         }
 
-        if batch.is_empty() {
-            break;
-        }
-
-        let batch_results: Vec<DictionaryElementData> = batch
-            .par_iter()
-            .filter_map(|line| {
-                let json: Value = serde_json::from_str(line).ok()?;
-                process_json_entry(&json, word_set)
-            })
-            .collect();
-
-        dictionary_data.extend(batch_results);
-        total_processed += batch.len();
-
-        if total_processed - last_print > 100000 {
-            println!("Processed {} entries for dictionary data", total_processed);
-            last_print = total_processed;
-        }
+        println!(
+            "Dictionary data built with {} entries, Now to merge...",
+            dictionary_data.len()
+        );
     }
-
-    println!(
-        "Dictionary data built with {} entries, Now to merge...",
-        dictionary_data.len()
-    );
 
     let dictionary_data = merge_duplicates(dictionary_data);
 
@@ -69,34 +74,45 @@ pub fn build_dictionary_data(
 }
 
 fn merge_duplicates(elements: Vec<DictionaryElementData>) -> Vec<DictionaryElementData> {
-    let mut word_map: HashMap<(String, TargetLanguage), DictionaryElementData> = HashMap::new();
+    let mut result = Vec::new();
+    let mut languages: Vec<TargetLanguage> = elements.iter().map(|e| e.lang.clone()).collect();
+    languages.dedup();
 
-    for element in elements {
-        let key = (element.word.clone(), element.lang.clone());
-        word_map
-            .entry(key)
-            .and_modify(|existing| {
-                // Merge audio
-                existing.audio.extend(element.audio.clone());
-                dedup_preserve_order(&mut existing.audio);
+    for lang in languages {
+        let mut word_map: HashMap<&String, DictionaryElementData> = HashMap::new();
 
-                // Merge IPA
-                if existing.ipa.is_none() {
-                    existing.ipa = element.ipa.clone();
-                }
+        // Process elements for the current language
+        for element in elements.iter().filter(|e| e.lang == lang) {
+            word_map
+                .entry(&element.word)
+                .and_modify(|existing| {
+                    // Merge audio
+                    existing.audio.extend(element.audio.clone());
+                    dedup_preserve_order(&mut existing.audio);
 
-                // Merge word types
-                existing.word_types.extend(element.word_types.clone());
-                dedup_preserve_order(&mut existing.word_types);
+                    // Merge IPA
+                    if existing.ipa.is_none() {
+                        existing.ipa = element.ipa.clone();
+                    }
 
-                // Merge definitions
-                existing.definitions.extend(element.definitions.clone());
-                dedup_preserve_order(&mut existing.definitions);
-            })
-            .or_insert(element);
+                    // Merge word types
+                    existing.word_types.extend(element.word_types.clone());
+                    dedup_preserve_order(&mut existing.word_types);
+
+                    // Merge definitions
+                    existing.definitions.extend(element.definitions.clone());
+                    dedup_preserve_order(&mut existing.definitions);
+                })
+                .or_insert(element.clone());
+        }
+
+        // Add processed elements for this language to the result
+        result.extend(word_map.into_values());
+
+        // The word_map is deallocated here as it goes out of scope
     }
 
-    word_map.into_values().collect()
+    result
 }
 
 fn dedup_preserve_order<T: Eq + std::hash::Hash + Clone>(v: &mut Vec<T>) {
@@ -110,7 +126,7 @@ fn process_json_entry(
 ) -> Option<DictionaryElementData> {
     let word = json.get("word")?.as_str()?.to_string();
     let lang_code = json.get("lang_code")?.as_str()?;
-    let language = TargetLanguage::from_wiktionary_language_code(lang_code)?;
+    let language = TargetLanguage::from_wiktionary_language_code_n(lang_code)?;
 
     if !word_set.contains(&(word.clone(), language.clone())) {
         return None;

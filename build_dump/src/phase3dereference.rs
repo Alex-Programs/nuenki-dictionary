@@ -131,7 +131,7 @@ fn parse_dereference(text: &[HyperlinkedText]) -> Option<(String, String)> {
         return None;
     }
 
-    Some((before_text + "of", referenced_word))
+    Some((before_text + "of", referenced_word.to_string()))
 }
 
 #[cfg(test)]

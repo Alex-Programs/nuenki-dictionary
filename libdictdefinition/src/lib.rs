@@ -39,7 +39,7 @@ impl DictionaryElementData {
         format!(
             "https://en.wiktionary.org/wiki/{}#{}",
             encoded_word,
-            self.lang.to_wiktionary_long_name()
+            self.lang.to_wiktionary_long_name_n()
         )
     }
 }

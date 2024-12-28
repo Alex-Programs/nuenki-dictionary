@@ -31,7 +31,10 @@ pub async fn get_definition(
     State(state): State<AppState>,
     Query(payload): Query<DictionaryRequest>,
 ) -> Result<Json<DictionaryResponse>, (StatusCode, String)> {
-    let label = [("language", payload.language.to_extension_technical_format())];
+    let label = [(
+        "language",
+        payload.language.to_extension_technical_format_n(),
+    )];
     counter!("dictionary_query_language", &label).increment(1);
 
     let t_start = Instant::now();
