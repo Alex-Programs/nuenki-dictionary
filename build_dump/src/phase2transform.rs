@@ -6,6 +6,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
+use unicode_normalization::UnicodeNormalization;
 
 use libdictdefinition::{Definition, DictionaryElementData, HyperlinkedText};
 
@@ -18,6 +19,7 @@ pub fn build_dictionary_data(
     word_set: &HashSet<(String, TargetLanguage)>,
 ) -> std::io::Result<Vec<DictionaryElementData>> {
     let mut dictionary_data = Vec::new();
+    let mut langs_set = Vec::new();
 
     // separate scope to encourage deallocation
     {
@@ -51,6 +53,13 @@ pub fn build_dictionary_data(
                 })
                 .collect();
 
+            for el in &batch_results {
+                if !langs_set.contains(&el.lang) {
+                    langs_set.push(el.lang.clone());
+                    println!("Langs: {:?}", langs_set);
+                }
+            }
+
             dictionary_data.extend(batch_results);
             total_processed += batch.len();
 
@@ -66,23 +75,37 @@ pub fn build_dictionary_data(
         );
     }
 
-    let dictionary_data = merge_duplicates(dictionary_data);
+    let dictionary_data = merge_duplicates(dictionary_data, langs_set);
 
     println!("Merge complete");
 
     Ok(dictionary_data)
 }
 
-fn merge_duplicates(elements: Vec<DictionaryElementData>) -> Vec<DictionaryElementData> {
+fn merge_duplicates(
+    mut elements: Vec<DictionaryElementData>,
+    languages: Vec<TargetLanguage>,
+) -> Vec<DictionaryElementData> {
     let mut result = Vec::new();
-    let mut languages: Vec<TargetLanguage> = elements.iter().map(|e| e.lang.clone()).collect();
-    languages.dedup();
 
     for lang in languages {
+        println!("Running merge on {:?}", lang);
+
         let mut word_map: HashMap<&String, DictionaryElementData> = HashMap::new();
 
         // Process elements for the current language
-        for element in elements.iter().filter(|e| e.lang == lang) {
+        let mut i = 0;
+        let mut to_remove = Vec::new();
+
+        for element in elements.iter() {
+            if element.lang != lang {
+                i += 1;
+                continue;
+            }
+            to_remove.push(i);
+
+            //println!("i{}", i);
+
             word_map
                 .entry(&element.word)
                 .and_modify(|existing| {
@@ -104,12 +127,23 @@ fn merge_duplicates(elements: Vec<DictionaryElementData>) -> Vec<DictionaryEleme
                     dedup_preserve_order(&mut existing.definitions);
                 })
                 .or_insert(element.clone());
+
+            i += 1;
         }
 
+        println!("Done; extending");
         // Add processed elements for this language to the result
         result.extend(word_map.into_values());
 
-        // The word_map is deallocated here as it goes out of scope
+        // Now eliminate all the elements of this language from the old data (for memory reasons)
+        println!("Now removing");
+
+        let mut offset = 0;
+        for i in to_remove {
+            elements.swap_remove(i - offset);
+            //println!("sr {} | {}", i, offset);
+            offset += 1;
+        }
     }
 
     result

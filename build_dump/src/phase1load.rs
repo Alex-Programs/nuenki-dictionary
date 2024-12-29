@@ -41,6 +41,7 @@ pub fn build_word_set(input_path: &Path) -> std::io::Result<HashSet<(String, Tar
                 let word = json.get("word")?.as_str()?.to_string();
                 let lang_code = json.get("lang_code")?.as_str()?;
                 let language = TargetLanguage::from_wiktionary_language_code_n(lang_code)?;
+
                 Some((word, language))
             })
             .collect();

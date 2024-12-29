@@ -89,7 +89,7 @@ fn parse_dereference(text: &[HyperlinkedText]) -> Option<(String, String)> {
             }
         }
 
-        if char_count_before_of > 50 || space_count_before_of >= 5 {
+        if char_count_before_of > 70 || space_count_before_of >= 8 {
             return None;
         }
     }
