@@ -6,7 +6,6 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
-use unicode_normalization::UnicodeNormalization;
 
 use libdictdefinition::{Definition, DictionaryElementData, HyperlinkedText};
 
