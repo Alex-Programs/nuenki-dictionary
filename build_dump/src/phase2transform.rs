@@ -93,14 +93,13 @@ fn merge_duplicates(
         let mut word_map: HashMap<&String, DictionaryElementData> = HashMap::new();
 
         // Process elements for the current language
-        let mut i = 0;
         let mut to_remove = Vec::new();
 
-        for element in elements.iter() {
+        for (i, element) in elements.iter().enumerate() {
             if element.lang != lang {
-                i += 1;
                 continue;
             }
+
             to_remove.push(i);
 
             //println!("i{}", i);
@@ -126,8 +125,6 @@ fn merge_duplicates(
                     dedup_preserve_order(&mut existing.definitions);
                 })
                 .or_insert(element.clone());
-
-            i += 1;
         }
 
         println!("Done; extending");
@@ -137,11 +134,15 @@ fn merge_duplicates(
         // Now eliminate all the elements of this language from the old data (for memory reasons)
         println!("Now removing");
 
-        let mut offset = 0;
+        // Invert the list first
+        to_remove.reverse();
+
+        // Then sort in descending order, just in case
+        to_remove.sort_unstable_by(|a, b| b.cmp(a));
+
+        // Remove elements from back to front
         for i in to_remove {
-            elements.swap_remove(i - offset);
-            //println!("sr {} | {}", i, offset);
-            offset += 1;
+            elements.swap_remove(i);
         }
     }
 
@@ -346,7 +347,7 @@ const WORD_SET_EXCEPTIONS: [&'static str; 63] = [
     "5", "6", "7", "8", "9", "not",
 ];
 
-fn hyperlink_text(
+pub fn hyperlink_text(
     text: String,
     word_set: &HashSet<(String, TargetLanguage)>,
     language: &TargetLanguage,

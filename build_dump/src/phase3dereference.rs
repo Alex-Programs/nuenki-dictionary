@@ -71,15 +71,22 @@ fn parse_dereference(text: &[HyperlinkedText]) -> Option<(String, String)> {
 
     let mut before_text = String::new();
 
-    for (i, item) in text.iter().enumerate() {
+    println!("{:?}", text);
+
+    'outer: for (i, item) in text.iter().enumerate() {
         //println!("{:?}", item);
         match item {
             HyperlinkedText::Plain(s) | HyperlinkedText::Link(s) => {
-                if s == "of" && i + 2 < text.len() {
-                    if let HyperlinkedText::Link(word) = &text[i + 2] {
-                        of_index = Some(i);
-                        referenced_word = Some(word.clone());
-                        break;
+                println!("|{}|", s);
+                if *s == "of" {
+                    for offset in 1..(2 + 1) {
+                        if i + offset < text.len() {
+                            if let HyperlinkedText::Link(word) = &text[i + offset] {
+                                of_index = Some(i);
+                                referenced_word = Some(word.clone());
+                                break 'outer;
+                            }
+                        }
                     }
                 }
                 char_count_before_of += s.len();
@@ -137,7 +144,23 @@ fn parse_dereference(text: &[HyperlinkedText]) -> Option<(String, String)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::phase2transform::hyperlink_text;
     use libdictdefinition::HyperlinkedText;
+
+    #[test]
+    fn test_sollen() {
+        let input = vec![
+            HyperlinkedText::Plain("inflection".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Plain("of".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Link("sollen".to_string()),
+            HyperlinkedText::Plain(":".to_string()),
+        ];
+
+        let expected = Some(("inflection of".to_string(), "sollen".to_string()));
+        assert_eq!(parse_dereference(&input), expected);
+    }
 
     #[test]
     fn test_parse_dereference_versuchen() {
@@ -150,6 +173,32 @@ mod tests {
         ];
 
         let expected = Some(("gerund of".to_string(), "versuchen".to_string()));
+        assert_eq!(parse_dereference(&input), expected);
+    }
+
+    #[test]
+    fn test_parse_dereference_latin() {
+        let input = vec![
+            HyperlinkedText::Plain("third".to_string()),
+            HyperlinkedText::Plain("-".to_string()),
+            HyperlinkedText::Plain("person".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Plain("singular".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Plain("present".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Link("active".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Link("indicative".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Plain("of".to_string()),
+            HyperlinkedText::Link("operor".to_string()),
+        ];
+
+        let expected = Some((
+            "third-person singular present active indicative of".to_string(),
+            "operor".to_string(),
+        ));
         assert_eq!(parse_dereference(&input), expected);
     }
 
@@ -167,7 +216,7 @@ mod tests {
     #[test]
     fn test_parse_dereference_exceeds_limits() {
         let input = vec![
-            HyperlinkedText::Plain("a".repeat(51)),
+            HyperlinkedText::Plain("a".repeat(510)),
             HyperlinkedText::Plain("of".to_string()),
             HyperlinkedText::Link("word".to_string()),
         ];
