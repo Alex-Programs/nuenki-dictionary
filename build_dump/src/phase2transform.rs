@@ -121,8 +121,7 @@ fn merge_duplicates(
                     dedup_preserve_order(&mut existing.word_types);
 
                     // Merge definitions
-                    existing.definitions.extend(element.definitions.clone());
-                    dedup_preserve_order(&mut existing.definitions);
+                    merge_definitions(&mut existing.definitions, &element.definitions);
                 })
                 .or_insert(element.clone());
         }
@@ -147,6 +146,29 @@ fn merge_duplicates(
     }
 
     result
+}
+
+fn merge_definitions(
+    existing_definitions: &mut Vec<Definition>,
+    new_definitions: &Vec<Definition>,
+) {
+    let mut merged_definitions = Vec::new();
+
+    for new_def in new_definitions {
+        if let Some(existing_def) = existing_definitions
+            .iter()
+            .find(|def| def.text == new_def.text)
+        {
+            let mut merged_def = existing_def.clone();
+            merged_def.tags.extend(new_def.tags.clone());
+            dedup_preserve_order(&mut merged_def.tags);
+            merged_definitions.push(merged_def);
+        } else {
+            merged_definitions.push(new_def.clone());
+        }
+    }
+
+    *existing_definitions = merged_definitions;
 }
 
 fn dedup_preserve_order<T: Eq + std::hash::Hash + Clone>(v: &mut Vec<T>) {

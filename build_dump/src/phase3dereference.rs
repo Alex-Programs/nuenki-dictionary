@@ -1,5 +1,5 @@
 use libdictdefinition::{DictionaryElementData, HyperlinkedText};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use Languages::TargetLanguage;
 
 pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<DictionaryElementData> {
@@ -10,11 +10,14 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
 
     let mut to_process = Vec::new();
 
+    let mut to_process_keys = HashSet::new();
+
     // Identify elements to be dereferenced
     for ((key, lang), element) in &element_map {
         if element.definitions.len() <= 3 {
             if let Some(first_def) = element.definitions.first() {
                 if !first_def.tags.contains(&"Form-of".to_string()) {
+                    println!("Continuing early");
                     continue;
                 }
 
@@ -27,16 +30,24 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
                         dereferenced_text,
                         referenced_word,
                     ));
+                    to_process_keys.insert(key.clone());
 
                     println!("Planning to process {} {:?}", key, lang);
+                } else {
+                    println!("Not going to dereference {}", key);
                 }
             }
         }
     }
 
+    // stop multi stage ones
+    to_process.retain(|x| !to_process_keys.contains(&x.3));
+
     // Perform dereferencing
     let mut i = 0;
     let tpl = to_process.len() as f32;
+
+    println!("To process: {:?}", to_process);
 
     for (key, lang, dereferenced_text, referenced_word) in to_process {
         i += 1;
@@ -48,11 +59,13 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
 
             new_element.dereferenced_text = Some(dereferenced_text);
             element_map.insert((key, lang), new_element);
+        } else {
+            panic!("Cannot find element!!!");
         }
 
         if i % 10000 == 0 {
             let percentage = i as f32 / tpl * 100.0;
-            println!("{}%", percentage);
+            println!("Applying deference {}%", percentage);
         }
     }
 
@@ -145,7 +158,158 @@ fn parse_dereference(text: &[HyperlinkedText]) -> Option<(String, String)> {
 mod tests {
     use super::*;
     use crate::phase2transform::hyperlink_text;
-    use libdictdefinition::HyperlinkedText;
+    use libdictdefinition::{Definition, HyperlinkedText};
+
+    #[test]
+    fn test_process_dereferences_circular() {
+        let menschlich = DictionaryElementData {
+            key: "menschlich".to_string(),
+            word: "menschlich".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![],
+            ipa: None,
+            word_types: vec![],
+            definitions: vec![Definition {
+                text: vec![
+                    HyperlinkedText::Plain("inflection".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("of".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Link("somethingorother".to_string()),
+                    HyperlinkedText::Plain(":".to_string()),
+                ],
+                tags: vec!["Form-of".to_string()],
+            }],
+            dereferenced_text: None,
+        };
+
+        let other = DictionaryElementData {
+            key: "somethingorother".to_string(),
+            word: "somethingorother".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![],
+            ipa: None,
+            word_types: vec!["adj".to_string()],
+            definitions: vec![Definition {
+                text: vec![HyperlinkedText::Plain("thing".to_string())],
+                tags: vec![],
+            }],
+            dereferenced_text: None,
+        };
+
+        let menschlichen = DictionaryElementData {
+            key: "menschlichen".to_string(),
+            word: "menschlichen".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![
+                "https://upload.wikimedia.org/wikipedia/commons/7/7c/De-menschlichen.ogg"
+                    .to_string(),
+            ],
+            ipa: None,
+            word_types: vec!["adj".to_string()],
+            definitions: vec![Definition {
+                text: vec![
+                    HyperlinkedText::Plain("inflection".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("of".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Link("menschlich".to_string()),
+                    HyperlinkedText::Plain(":".to_string()),
+                ],
+                tags: vec!["Form-of".to_string()],
+            }],
+            dereferenced_text: None,
+        };
+
+        let result = process_dereferences(vec![menschlich, menschlichen, other]);
+
+        println!("Result: {:?}", result);
+
+        assert_eq!(result.len(), 3);
+
+        let menschlichen_result = result.iter().find(|e| e.key == "menschlichen").unwrap();
+        assert_eq!(menschlichen_result.word, "menschlichen");
+        assert!(!menschlichen_result.dereferenced_text.is_some());
+
+        let menschlich_result = result.iter().find(|e| e.key == "menschlich").unwrap();
+        assert_eq!(menschlich_result.word, "somethingorother");
+        assert!(menschlich_result.dereferenced_text.is_some());
+        assert_eq!(
+            menschlich_result.dereferenced_text.as_ref().unwrap(),
+            "inflection of"
+        );
+    }
+
+    #[test]
+    fn test_end_to_end_dereference() {
+        let a = DictionaryElementData {
+            key: "bemerkt".to_string(),
+            word: "bemerkt".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![],
+            ipa: None,
+            word_types: vec![],
+            definitions: vec![Definition {
+                text: vec![
+                    HyperlinkedText::Plain("past".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("participle".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("of".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Link("bemerken".to_string()),
+                ],
+                tags: vec!["Form-of".to_string()],
+            }],
+            dereferenced_text: None,
+        };
+
+        let b = DictionaryElementData {
+            key: "bemerken".to_string(),
+            word: "bemerken".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![],
+            ipa: None,
+            word_types: vec![],
+            definitions: vec![Definition {
+                text: vec![
+                    HyperlinkedText::Plain("past".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("participle".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("bla".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Link("bemerken".to_string()),
+                ],
+                tags: vec![],
+            }],
+            dereferenced_text: None,
+        };
+
+        let out = process_dereferences(vec![a, b]);
+
+        assert_eq!(out[0].key, "bemerkt");
+        assert_eq!(out[0].word, "bemerken");
+
+        assert_eq!(out[1].key, "bemerken");
+        assert_eq!(out[1].word, "bemerken");
+    }
+
+    #[test]
+    fn test_bemerkt() {
+        let input = vec![
+            HyperlinkedText::Plain("past".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Plain("participle".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Plain("of".to_string()),
+            HyperlinkedText::Plain(" ".to_string()),
+            HyperlinkedText::Link("bemerken".to_string()),
+        ];
+
+        let expected = Some(("past participle of".to_string(), "bemerken".to_string()));
+        assert_eq!(parse_dereference(&input), expected);
+    }
 
     #[test]
     fn test_sollen() {
