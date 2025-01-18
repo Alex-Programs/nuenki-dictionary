@@ -121,7 +121,9 @@ fn merge_duplicates(
                     dedup_preserve_order(&mut existing.word_types);
 
                     // Merge definitions
-                    merge_definitions(&mut existing.definitions, &element.definitions);
+                    existing.definitions.extend(element.definitions.clone());
+                    dedup_preserve_order(&mut existing.definitions);
+                    consolidate_definitions(&mut existing.definitions);
                 })
                 .or_insert(element.clone());
         }
@@ -148,27 +150,24 @@ fn merge_duplicates(
     result
 }
 
-fn merge_definitions(
-    existing_definitions: &mut Vec<Definition>,
-    new_definitions: &Vec<Definition>,
-) {
-    let mut merged_definitions = Vec::new();
+fn consolidate_definitions(existing_definitions: &mut Vec<Definition>) {
+    let mut seen_texts = HashSet::new();
+    let mut consolidated = Vec::new();
 
-    for new_def in new_definitions {
-        if let Some(existing_def) = existing_definitions
-            .iter()
-            .find(|def| def.text == new_def.text)
-        {
-            let mut merged_def = existing_def.clone();
-            merged_def.tags.extend(new_def.tags.clone());
-            dedup_preserve_order(&mut merged_def.tags);
-            merged_definitions.push(merged_def);
+    for mut definition in existing_definitions.drain(..) {
+        if seen_texts.insert(definition.text.clone()) {
+            // This is a new definition, add it to consolidated
+            consolidated.push(definition);
         } else {
-            merged_definitions.push(new_def.clone());
+            // This text has been seen before, find and update the existing definition
+            if let Some(existing) = consolidated.iter_mut().find(|d| d.text == definition.text) {
+                existing.tags.append(&mut definition.tags);
+                dedup_preserve_order(&mut existing.tags);
+            }
         }
     }
 
-    *existing_definitions = merged_definitions;
+    *existing_definitions = consolidated;
 }
 
 fn dedup_preserve_order<T: Eq + std::hash::Hash + Clone>(v: &mut Vec<T>) {

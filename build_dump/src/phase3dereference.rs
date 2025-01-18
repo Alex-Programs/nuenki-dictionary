@@ -17,7 +17,7 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
         if element.definitions.len() <= 3 {
             if let Some(first_def) = element.definitions.first() {
                 if !first_def.tags.contains(&"Form-of".to_string()) {
-                    println!("Continuing early");
+                    //println!("Continuing early");
                     continue;
                 }
 
@@ -32,9 +32,9 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
                     ));
                     to_process_keys.insert(key.clone());
 
-                    println!("Planning to process {} {:?}", key, lang);
+                    //println!("Planning to process {} {:?}", key, lang);
                 } else {
-                    println!("Not going to dereference {}", key);
+                    //println!("Not going to dereference {}", key);
                 }
             }
         }
@@ -47,7 +47,7 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
     let mut i = 0;
     let tpl = to_process.len() as f32;
 
-    println!("To process: {:?}", to_process);
+    //println!("To process: {:?}", to_process);
 
     for (key, lang, dereferenced_text, referenced_word) in to_process {
         i += 1;
@@ -65,7 +65,7 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
 
         if i % 10000 == 0 {
             let percentage = i as f32 / tpl * 100.0;
-            println!("Applying deference {}%", percentage);
+            //println!("Applying deference {}%", percentage);
         }
     }
 
@@ -84,13 +84,13 @@ fn parse_dereference(text: &[HyperlinkedText]) -> Option<(String, String)> {
 
     let mut before_text = String::new();
 
-    println!("{:?}", text);
+    //println!("{:?}", text);
 
     'outer: for (i, item) in text.iter().enumerate() {
         //println!("{:?}", item);
         match item {
             HyperlinkedText::Plain(s) | HyperlinkedText::Link(s) => {
-                println!("|{}|", s);
+                //println!("|{}|", s);
                 if *s == "of" {
                     for offset in 1..(2 + 1) {
                         if i + offset < text.len() {
@@ -223,7 +223,7 @@ mod tests {
 
         let result = process_dereferences(vec![menschlich, menschlichen, other]);
 
-        println!("Result: {:?}", result);
+        //println!("Result: {:?}", result);
 
         assert_eq!(result.len(), 3);
 
