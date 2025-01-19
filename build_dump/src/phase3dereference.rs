@@ -65,7 +65,7 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
 
         if i % 10000 == 0 {
             let percentage = i as f32 / tpl * 100.0;
-            //println!("Applying deference {}%", percentage);
+            println!("Applying deference {}%", percentage);
         }
     }
 
@@ -159,6 +159,248 @@ mod tests {
     use super::*;
     use crate::phase2transform::hyperlink_text;
     use libdictdefinition::{Definition, HyperlinkedText};
+
+    #[test]
+    fn test_sollte_and_sollen_dereferencing() {
+        let sollte = DictionaryElementData {
+            key: "sollte".to_string(),
+            word: "sollte".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![
+                "https://upload.wikimedia.org/wikipedia/commons/0/01/De-sollte.ogg".to_string(),
+                "https://upload.wikimedia.org/wikipedia/commons/2/20/De-sollte2.ogg".to_string(),
+            ],
+            ipa: Some("/ˈzɔltə/".to_string()),
+            word_types: vec!["verb".to_string()],
+            definitions: vec![
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("inflection".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("of".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Link("sollen".to_string()),
+                        HyperlinkedText::Plain(":".to_string()),
+                    ],
+                    tags: vec![
+                        "First-person".to_string(),
+                        "Form-of".to_string(),
+                        "Preterite".to_string(),
+                        "Singular".to_string(),
+                        "Third-person".to_string(),
+                    ],
+                },
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("inflection".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("of".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Link("sollen".to_string()),
+                        HyperlinkedText::Plain(":".to_string()),
+                    ],
+                    tags: vec![
+                        "First-person".to_string(),
+                        "Form-of".to_string(),
+                        "Singular".to_string(),
+                        "Subjunctive-ii".to_string(),
+                        "Third-person".to_string(),
+                    ],
+                },
+            ],
+            dereferenced_text: None,
+        };
+
+        let sollen = DictionaryElementData {
+            key: "sollen".to_string(),
+            word: "sollen".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![
+                "https://upload.wikimedia.org/wikipedia/commons/f/fb/De-sollen.ogg".to_string(),
+                "https://upload.wikimedia.org/wikipedia/commons/3/3b/De-at-sollen.ogg".to_string(),
+            ],
+            ipa: Some("/ˈzɔlən/".to_string()),
+            word_types: vec!["verb".to_string()],
+            definitions: vec![Definition {
+                text: vec![
+                    HyperlinkedText::Plain("should".to_string()),
+                    HyperlinkedText::Plain("; ".to_string()),
+                    HyperlinkedText::Plain("to".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("be".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("obligated".to_string()),
+                    HyperlinkedText::Plain(" (".to_string()),
+                    HyperlinkedText::Plain("to".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("do".to_string()),
+                    HyperlinkedText::Plain(" ".to_string()),
+                    HyperlinkedText::Plain("something".to_string()),
+                    HyperlinkedText::Plain("); ".to_string()),
+                    HyperlinkedText::Plain("ought".to_string()),
+                    HyperlinkedText::Plain("; ".to_string()),
+                    HyperlinkedText::Plain("shall".to_string()),
+                ],
+                tags: vec!["Auxiliary".to_string(), "Preterite-present".to_string()],
+            }],
+            dereferenced_text: None,
+        };
+
+        let result = process_dereferences(vec![sollte, sollen]);
+
+        assert_eq!(result.len(), 2);
+
+        let sollte_result = result.iter().find(|e| e.key == "sollte").unwrap();
+        assert_eq!(sollte_result.key, "sollte");
+        assert_eq!(sollte_result.word, "sollen");
+        assert!(sollte_result.dereferenced_text.is_some());
+        assert_eq!(
+            sollte_result.dereferenced_text.as_ref().unwrap(),
+            "inflection of"
+        );
+
+        let sollen_result = result.iter().find(|e| e.key == "sollen").unwrap();
+        assert_eq!(sollen_result.word, "sollen");
+        assert!(sollen_result.dereferenced_text.is_none());
+    }
+
+    #[test]
+    fn test_frag_dereference_to_fragen() {
+        let frag = DictionaryElementData {
+            key: "frag".to_string(),
+            word: "frag".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![
+                "https://upload.wikimedia.org/wikipedia/commons/e/eb/De-frag.ogg".to_string(),
+            ],
+            ipa: Some("/fʁaːk/".to_string()),
+            word_types: vec!["verb".to_string()],
+            definitions: vec![
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("singular".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("imperative".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("of".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Link("fragen".to_string()),
+                    ],
+                    tags: vec![
+                        "Form-of".to_string(),
+                        "Imperative".to_string(),
+                        "Singular".to_string(),
+                    ],
+                },
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("first".to_string()),
+                        HyperlinkedText::Plain("-".to_string()),
+                        HyperlinkedText::Plain("person".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("singular".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("present".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("of".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Link("fragen".to_string()),
+                    ],
+                    tags: vec![
+                        "Colloquial".to_string(),
+                        "First-person".to_string(),
+                        "Form-of".to_string(),
+                        "Present".to_string(),
+                        "Singular".to_string(),
+                    ],
+                },
+            ],
+            dereferenced_text: None,
+        };
+
+        let fragen = DictionaryElementData {
+            key: "fragen".to_string(),
+            word: "fragen".to_string(),
+            lang: TargetLanguage::German,
+            audio: vec![
+                "https://upload.wikimedia.org/wikipedia/commons/7/7c/De-fragen.ogg".to_string(),
+                "https://upload.wikimedia.org/wikipedia/commons/9/9c/De-fragen2.ogg".to_string(),
+                "https://upload.wikimedia.org/wikipedia/commons/2/2d/De-fragen3.ogg".to_string(),
+            ],
+            ipa: Some("/ˈfʁaːɡən/".to_string()),
+            word_types: vec!["verb".to_string()],
+            definitions: vec![
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("to".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("ask".to_string()),
+                    ],
+                    tags: vec![
+                        "Mixed".to_string(),
+                        "Transitive".to_string(),
+                        "Weak".to_string(),
+                    ],
+                },
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("to".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("ask".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("for".to_string()),
+                        HyperlinkedText::Plain(", ".to_string()),
+                        HyperlinkedText::Plain("to".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("ask".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Link("after".to_string()),
+                    ],
+                    tags: vec![
+                        "Intransitive".to_string(),
+                        "Mixed".to_string(),
+                        "Transitive".to_string(),
+                        "Weak".to_string(),
+                    ],
+                },
+                Definition {
+                    text: vec![
+                        HyperlinkedText::Plain("to".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("wonder".to_string()),
+                        HyperlinkedText::Plain(" (".to_string()),
+                        HyperlinkedText::Plain("literally".to_string()),
+                        HyperlinkedText::Plain(", ".to_string()),
+                        HyperlinkedText::Plain("“to".to_string()),
+                        HyperlinkedText::Plain(" ".to_string()),
+                        HyperlinkedText::Plain("ask".to_string()),
+                        HyperlinkedText::Plain(" (".to_string()),
+                        HyperlinkedText::Plain("oneself".to_string()),
+                        HyperlinkedText::Plain(")".to_string()),
+                        HyperlinkedText::Plain("”".to_string()),
+                        HyperlinkedText::Plain(")".to_string()),
+                    ],
+                    tags: vec![
+                        "Mixed".to_string(),
+                        "Reflexive".to_string(),
+                        "Weak".to_string(),
+                    ],
+                },
+            ],
+            dereferenced_text: None,
+        };
+
+        let result = process_dereferences(vec![frag, fragen]);
+
+        let frag_result = result.iter().find(|e| e.key == "frag").unwrap();
+
+        assert_eq!(frag_result.word, "fragen");
+        assert!(frag_result.dereferenced_text.is_some());
+        assert_eq!(
+            frag_result.dereferenced_text.as_ref().unwrap(),
+            "singular imperative of"
+        );
+    }
 
     #[test]
     fn test_process_dereferences_circular() {
@@ -286,13 +528,21 @@ mod tests {
             dereferenced_text: None,
         };
 
-        let out = process_dereferences(vec![a, b]);
+        let result = process_dereferences(vec![a, b]);
 
-        assert_eq!(out[0].key, "bemerkt");
-        assert_eq!(out[0].word, "bemerken");
+        assert_eq!(result.len(), 2);
 
-        assert_eq!(out[1].key, "bemerken");
-        assert_eq!(out[1].word, "bemerken");
+        let bemerkt_result = result.iter().find(|e| e.key == "bemerkt").unwrap();
+        assert_eq!(bemerkt_result.word, "bemerken");
+        assert!(bemerkt_result.dereferenced_text.is_some());
+        assert_eq!(
+            bemerkt_result.dereferenced_text.as_ref().unwrap(),
+            "past participle of"
+        );
+
+        let bemerken_result = result.iter().find(|e| e.key == "bemerken").unwrap();
+        assert_eq!(bemerken_result.word, "bemerken");
+        assert!(bemerken_result.dereferenced_text.is_none());
     }
 
     #[test]
