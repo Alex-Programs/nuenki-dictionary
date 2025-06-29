@@ -45,13 +45,27 @@ pub fn process_dereferences(elements: Vec<DictionaryElementData>) -> Vec<Diction
 
     // Perform dereferencing
     for (key, lang, dereferenced_text, referenced_word) in to_process {
+        // Get the original element before we overwrite it. We need its audio/ipa.
+        let original_element = match element_map.get(&(key.clone(), lang.clone())) {
+            Some(el) => el.clone(),
+            None => continue, // Should be impossible, but safer to handle
+        };
+
         if let Some(referenced_element) = element_map.get(&(referenced_word.clone(), lang.clone()))
         {
             let mut new_element = referenced_element.clone();
-            new_element.key = key.clone(); // The key is the original word (e.g., "einen")
+            new_element.key = key.clone();
+            new_element.word = key.clone();
             new_element.dereferenced_text = Some(dereferenced_text);
 
-            // Replace the old element with the new, dereferenced one.
+            // **THE FIX**: Preserve the original audio/ipa if the root element doesn't have it.
+            if new_element.audio.is_empty() {
+                new_element.audio = original_element.audio;
+            }
+            if new_element.ipa.is_none() {
+                new_element.ipa = original_element.ipa;
+            }
+
             element_map.insert((key, lang), new_element);
         }
     }

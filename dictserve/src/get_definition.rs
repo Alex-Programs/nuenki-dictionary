@@ -21,7 +21,7 @@ pub struct DictionaryResponse {
     wiktionary_link: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct DictionaryRequest {
     language: TargetLanguage,
     word: String,
@@ -36,6 +36,8 @@ pub async fn get_definition(
         payload.language.to_extension_technical_format_n(),
     )];
     counter!("dictionary_query_language", &label).increment(1);
+
+    info!("Request: {:?}", payload);
 
     let t_start = Instant::now();
     let dict_element = state

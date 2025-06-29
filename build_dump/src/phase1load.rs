@@ -34,21 +34,24 @@ pub fn build_word_set(input_path: &Path) -> std::io::Result<HashSet<(String, Tar
             break;
         }
 
+        // CORRECTED LOGIC: Use flat_map to handle one-to-many language mappings.
         let batch_results: HashSet<(String, TargetLanguage)> = batch
             .par_iter()
-            .filter_map(|line| {
-                let json: Value = serde_json::from_str(line).ok()?;
-                let word = json.get("word")?.as_str()?.to_string();
-                let lang_code = json.get("lang_code")?.as_str()?;
-
-                let language =
-                    if TargetLanguage::from_wiktionary_language_code_n(lang_code).len() > 0 {
-                        TargetLanguage::from_wiktionary_language_code_n(lang_code)[0].clone()
-                    } else {
-                        return None;
-                    };
-
-                Some((word, language))
+            .flat_map(|line| {
+                // This closure now returns a Vec of entries, which flat_map will flatten.
+                let mut entries = Vec::new();
+                if let Ok(json) = serde_json::from_str::<Value>(line) {
+                    if let (Some(word), Some(lang_code)) = (
+                        json.get("word").and_then(Value::as_str),
+                        json.get("lang_code").and_then(Value::as_str),
+                    ) {
+                        let languages = TargetLanguage::from_wiktionary_language_code_n(lang_code);
+                        for lang in languages {
+                            entries.push((word.to_string(), lang));
+                        }
+                    }
+                }
+                entries
             })
             .collect();
 

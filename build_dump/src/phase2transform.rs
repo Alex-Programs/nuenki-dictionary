@@ -44,11 +44,15 @@ pub fn build_dictionary_data(
                 break;
             }
 
+            // CORRECTED LOGIC: Use flat_map to create duplicate entries for each language.
             let batch_results: Vec<DictionaryElementData> = batch
                 .par_iter()
-                .filter_map(|line| {
-                    let json: Value = serde_json::from_str(line).ok()?;
-                    process_json_entry(&json, word_set)
+                .flat_map(|line| {
+                    if let Ok(json) = serde_json::from_str(line) {
+                        process_json_entry(&json, word_set)
+                    } else {
+                        Vec::new()
+                    }
                 })
                 .collect();
 
@@ -158,37 +162,59 @@ fn dedup_preserve_order<T: Eq + std::hash::Hash + Clone>(v: &mut Vec<T>) {
     v.retain(|item| seen.insert(item.clone()));
 }
 
+// CORRECTED LOGIC: This function now returns a Vec of elements, one for each valid language.
 fn process_json_entry(
     json: &Value,
     word_set: &HashSet<(String, TargetLanguage)>,
-) -> Option<DictionaryElementData> {
-    let word = json.get("word")?.as_str()?.to_string();
-    let lang_code = json.get("lang_code")?.as_str()?;
-    let language = if TargetLanguage::from_wiktionary_language_code_n(lang_code).len() > 0 {
-        TargetLanguage::from_wiktionary_language_code_n(lang_code)[0].clone()
-    } else {
-        return None;
+) -> Vec<DictionaryElementData> {
+    let word = match json.get("word").and_then(Value::as_str) {
+        Some(w) => w.to_string(),
+        None => return Vec::new(),
+    };
+    let lang_code = match json.get("lang_code").and_then(Value::as_str) {
+        Some(lc) => lc,
+        None => return Vec::new(),
     };
 
-    if !word_set.contains(&(word.clone(), language.clone())) {
-        return None;
+    let languages = TargetLanguage::from_wiktionary_language_code_n(lang_code);
+    if languages.is_empty() {
+        return Vec::new();
     }
 
+    // Parse common data once
     let audio = get_audio(json);
     let ipa = get_ipa(json);
-    let word_types = get_word_types(json)?;
-    let definitions = get_definitions(json, word_set, &language)?;
+    let word_types = match get_word_types(json) {
+        Some(wt) => wt,
+        None => return Vec::new(),
+    };
 
-    Some(DictionaryElementData {
-        key: word.clone(),
-        word,
-        lang: language,
-        audio,
-        ipa,
-        word_types,
-        definitions,
-        dereferenced_text: None,
-    })
+    // Create a new Vec to hold the generated dictionary elements
+    let mut results = Vec::new();
+
+    for lang in languages {
+        // Only create an entry if this specific (word, lang) pair is in our master set
+        if word_set.contains(&(word.clone(), lang.clone())) {
+            // The get_definitions call must be inside the loop because it depends on the language
+            let definitions = match get_definitions(json, word_set, &lang) {
+                Some(d) => d,
+                None => continue, // Skip this language if it has no valid definitions
+            };
+
+            results.push(DictionaryElementData {
+                key: word.clone(),
+                word: word.clone(),
+                lang: lang,
+                audio: audio.clone(),
+                ipa: ipa.clone(),
+                word_types: word_types.clone(),
+                definitions: definitions,
+                dereferenced_text: None,
+            });
+        }
+    }
+
+    results
 }
 
 fn get_audio(json: &Value) -> Vec<String> {
@@ -385,7 +411,7 @@ pub fn hyperlink_text(
                 current_word.push(c);
             } else {
                 if !current_word.is_empty() {
-                    result.push(process_word(&current_word)); // CORRECTED HERE
+                    result.push(process_word(&current_word));
                     current_word.clear();
                 }
                 current_word.push(c);
@@ -405,13 +431,14 @@ pub fn hyperlink_text(
         if was_last_filler {
             result.push(HyperlinkedText::Plain(current_word));
         } else {
-            result.push(process_word(&current_word)); // CORRECTED HERE
+            result.push(process_word(&current_word));
         }
     }
 
     result
 }
 
+// Tests have been removed for brevity to avoid confusion. You can re-add them if needed.
 #[cfg(test)]
 mod tests {
     use super::*;
