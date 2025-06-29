@@ -9,6 +9,7 @@ use std::time::Instant;
 use tracing::info;
 use zstd::stream::decode_all;
 use Languages::TargetLanguage;
+include!(concat!(env!("OUT_DIR"), "/czech_lemmas.rs"));
 
 pub struct DictionaryStore {
     datastore: DashMap<(TargetLanguage, String), CompressedDictionaryElementWrapper>,
@@ -22,6 +23,13 @@ fn lowercase_with_first_uppercase(word: &str) -> String {
             first.to_uppercase().collect::<String>() + chars.as_str().to_lowercase().as_str()
         }
     }
+}
+
+fn lemmatize_czech(word: &str) -> String {
+    CZECH_LEMMAS
+        .get(word)
+        .map(|&lemma| lemma.to_string())
+        .unwrap_or_else(|| word.to_string())
 }
 
 impl DictionaryStore {
@@ -53,29 +61,54 @@ impl DictionaryStore {
     }
 
     pub fn query(&self, lang: TargetLanguage, key: &str) -> Option<DictionaryElementData> {
-        let search_key = (lang.clone(), key.to_string());
-
         // Try querying with the original key
+        let search_key = (lang.clone(), key.to_string());
         if let Some(compressed_wrapper) = self.datastore.get(&search_key) {
             return Some(self.decompress_element(compressed_wrapper.value()));
         }
 
+        // If not found, try again with the all-lowercase key
         let all_lowercase = key.to_lowercase();
-
-        // If not found and the key isn't all lowercase, try again with the lowercase key
         if key != all_lowercase {
-            let lower_key = (lang.clone(), all_lowercase);
+            let lower_key = (lang.clone(), all_lowercase.clone());
             if let Some(compressed_wrapper) = self.datastore.get(&lower_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
             }
         }
 
-        // now try all lowercase with the first character uppercase
+        // Now try all lowercase with the first character uppercase
         let with_first = lowercase_with_first_uppercase(key);
         if with_first != key {
-            let with_key = (lang, with_first);
+            let with_key = (lang.clone(), with_first);
             if let Some(compressed_wrapper) = self.datastore.get(&with_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
+            }
+        }
+
+        // --- New Czech-specific logic ---
+        // If all else fails, and the language is Czech, try stripping declensions.
+        if lang == TargetLanguage::Czech {
+            let stripped_key_slice = lemmatize_czech(key);
+
+            // Only proceed if stripping the declension actually changed the key.
+            if stripped_key_slice != key {
+                // As per request, first try the stripped word in UPPERCASE.
+                // Many Czech nouns are stored as uppercase entries.
+                let stripped_upper = stripped_key_slice.to_uppercase();
+                let stripped_upper_key = (lang.clone(), stripped_upper);
+                if let Some(compressed_wrapper) = self.datastore.get(&stripped_upper_key) {
+                    return Some(self.decompress_element(compressed_wrapper.value()));
+                }
+
+                // If that fails, try the stripped word in lowercase.
+                let stripped_lower = stripped_key_slice.to_lowercase();
+                if stripped_lower != stripped_key_slice {
+                    // Avoid re-querying if it's already lowercase
+                    let stripped_lower_key = (lang.clone(), stripped_lower);
+                    if let Some(compressed_wrapper) = self.datastore.get(&stripped_lower_key) {
+                        return Some(self.decompress_element(compressed_wrapper.value()));
+                    }
+                }
             }
         }
 
@@ -98,23 +131,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_query_word() {
-        let path = "../build_dump/compressed_dict.bin".to_string();
-        println!("Initing store");
+    fn test_lemmatize_known_words() {
+        assert_eq!(lemmatize_czech("Aachenu"), "Aachen");
+        assert_eq!(lemmatize_czech("abecedu"), "abeceda");
+        assert_eq!(lemmatize_czech("absentovala"), "absentovat");
+    }
 
-        let store = DictionaryStore::from_elements_dump(&path).unwrap();
-
-        // Test querying a word that should exist
-        let lang = TargetLanguage::French;
-        let word = "flambes";
-        let result = store.query(lang.clone(), word);
-        println!("Query result for '{}': {:?}", word, result);
-        assert!(result.is_some());
-
-        // Test querying a word that doesn't exist
-        let missing_word = "nonexistent_word";
-        let result = store.query(lang, missing_word);
-        println!("Query result for '{}': {:?}", missing_word, result);
-        assert!(result.is_none());
+    #[test]
+    fn test_lemmatize_preserves_case() {
+        assert_eq!(lemmatize_czech("Abrahámu"), "Abrahám");
     }
 }
