@@ -30,3 +30,8 @@ rayon = "1.7"
 
 libdictdefinition = { path = "../libdictdefinition/" }
 Languages = { path = "../../nuenki-languages/LanguagesStoreRs" }
+
+phf = { version = "0.11", features = ["macros"] }
+
+[build-dependencies]
+phf_codegen = "0.11"
