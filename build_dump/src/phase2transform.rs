@@ -164,7 +164,11 @@ fn process_json_entry(
 ) -> Option<DictionaryElementData> {
     let word = json.get("word")?.as_str()?.to_string();
     let lang_code = json.get("lang_code")?.as_str()?;
-    let language = TargetLanguage::from_wiktionary_language_code_n(lang_code)?;
+    let language = if TargetLanguage::from_wiktionary_language_code_n(lang_code).len() > 0 {
+        TargetLanguage::from_wiktionary_language_code_n(lang_code)[0].clone()
+    } else {
+        return None;
+    };
 
     if !word_set.contains(&(word.clone(), language.clone())) {
         return None;
@@ -235,10 +239,26 @@ fn get_word_types(json: &Value) -> Option<Vec<String>> {
 }
 
 const FILTER_TAGS: [&'static str; 20] = [
-    "class-1", "class-2", "class-3", "class-4", "class-5", "class-6", "class-7",
-    "declension-1", "declension-2", "declension-3", "declension-4", "declension-5",
-    "conjugation-1", "conjugation-2", "conjugation-3", "conjugation-4", "stress-pattern-1",
-    "stress-pattern-2", "stress-pattern-3", "stress-pattern-4",
+    "class-1",
+    "class-2",
+    "class-3",
+    "class-4",
+    "class-5",
+    "class-6",
+    "class-7",
+    "declension-1",
+    "declension-2",
+    "declension-3",
+    "declension-4",
+    "declension-5",
+    "conjugation-1",
+    "conjugation-2",
+    "conjugation-3",
+    "conjugation-4",
+    "stress-pattern-1",
+    "stress-pattern-2",
+    "stress-pattern-3",
+    "stress-pattern-4",
 ];
 
 fn uppercase_first_character_latin(text: &str) -> String {
@@ -262,17 +282,18 @@ fn get_definitions(
     let senses = json.get("senses").and_then(|senses| senses.as_array())?;
 
     for sense in senses {
-        let mut tags = sense
-            .get("tags")
-            .and_then(|t| t.as_array())
-            .map_or(Vec::new(), |tag_array| {
-                tag_array
-                    .iter()
-                    .filter_map(|tag| tag.as_str())
-                    .filter(|t| !FILTER_TAGS.contains(t))
-                    .map(|s| uppercase_first_character_latin(s))
-                    .collect()
-            });
+        let mut tags =
+            sense
+                .get("tags")
+                .and_then(|t| t.as_array())
+                .map_or(Vec::new(), |tag_array| {
+                    tag_array
+                        .iter()
+                        .filter_map(|tag| tag.as_str())
+                        .filter(|t| !FILTER_TAGS.contains(t))
+                        .map(|s| uppercase_first_character_latin(s))
+                        .collect()
+                });
         tags.sort();
 
         let gloss = sense
@@ -364,7 +385,7 @@ pub fn hyperlink_text(
                 current_word.push(c);
             } else {
                 if !current_word.is_empty() {
-                    result.push(process_word(¤t_word));
+                    result.push(process_word(&current_word)); // CORRECTED HERE
                     current_word.clear();
                 }
                 current_word.push(c);
@@ -384,7 +405,7 @@ pub fn hyperlink_text(
         if was_last_filler {
             result.push(HyperlinkedText::Plain(current_word));
         } else {
-            result.push(process_word(¤t_word));
+            result.push(process_word(&current_word)); // CORRECTED HERE
         }
     }
 
@@ -410,12 +431,7 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(
-                remove_diacritics(input),
-                expected,
-                "Failed on: {}",
-                input
-            );
+            assert_eq!(remove_diacritics(input), expected, "Failed on: {}", input);
         }
     }
 
@@ -447,22 +463,16 @@ mod tests {
         let mut word_set = HashSet::new();
         word_set.insert(("bonjour".to_string(), TargetLanguage::French));
         let input = "bonjour hallo".to_string();
-        let expected = vec![
-            HyperlinkedText::Link("bonjour".to_string()),
-            HyperlinkedText::Plain(" hallo".to_string()),
-        ];
-        // Note: The new logic groups trailing fillers, so the space is attached.
-        // Let's adjust the test to match the new, correct behavior.
         assert_eq!(
             hyperlink_text(input, &word_set, &TargetLanguage::French),
-             vec![
+            vec![
                 HyperlinkedText::Link("bonjour".to_string()),
                 HyperlinkedText::Plain(" ".to_string()),
                 HyperlinkedText::Plain("hallo".to_string()),
             ]
         );
     }
-    
+
     #[test]
     fn test_no_change() {
         assert_eq!(solve_unopened_brackets("()".to_string()), "()".to_string());

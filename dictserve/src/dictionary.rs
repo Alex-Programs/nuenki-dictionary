@@ -54,6 +54,7 @@ impl DictionaryStore {
 
     pub fn query(&self, lang: TargetLanguage, key: &str) -> Option<DictionaryElementData> {
         let search_key = (lang.clone(), key.to_string());
+        info!("Search key: {:?}", search_key);
 
         // Try querying with the original key
         if let Some(compressed_wrapper) = self.datastore.get(&search_key) {
@@ -65,6 +66,9 @@ impl DictionaryStore {
         // If not found and the key isn't all lowercase, try again with the lowercase key
         if key != all_lowercase {
             let lower_key = (lang.clone(), all_lowercase);
+
+            info!("Search key: {:?}", lower_key);
+
             if let Some(compressed_wrapper) = self.datastore.get(&lower_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
             }
@@ -73,11 +77,15 @@ impl DictionaryStore {
         // now try all lowercase with the first character uppercase
         let with_first = lowercase_with_first_uppercase(key);
         if with_first != key {
-            let with_key = (lang, with_first);
+            let with_key = (lang.clone(), with_first);
+            info!("Search key: {:?}", with_key);
+
             if let Some(compressed_wrapper) = self.datastore.get(&with_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
             }
         }
+
+        info!("Got nothing for lang: {:?} key: {:?}", lang, key);
 
         None
     }
