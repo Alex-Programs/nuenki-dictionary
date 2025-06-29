@@ -62,7 +62,7 @@ impl DictionaryStore {
 
     pub fn query(&self, lang: TargetLanguage, key: &str) -> Option<DictionaryElementData> {
         let search_key = (lang.clone(), key.to_string());
-        info!("Search key: {:?}", search_key);
+        //info!("Search key: {:?}", search_key);
 
         // Try querying with the original key
         let search_key = (lang.clone(), key.to_string());
@@ -75,7 +75,7 @@ impl DictionaryStore {
         if key != all_lowercase {
             let lower_key = (lang.clone(), all_lowercase.clone());
 
-            info!("Search key: {:?}", lower_key);
+            //info!("Search key: {:?}", lower_key);
 
             if let Some(compressed_wrapper) = self.datastore.get(&lower_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
@@ -87,7 +87,7 @@ impl DictionaryStore {
         if with_first != key {
             let with_key = (lang.clone(), with_first);
 
-            info!("Search key: {:?}", with_key);
+            //info!("Search key: {:?}", with_key);
 
             if let Some(compressed_wrapper) = self.datastore.get(&with_key) {
                 return Some(self.decompress_element(compressed_wrapper.value()));
@@ -99,12 +99,12 @@ impl DictionaryStore {
             if stripped_key_slice == key {
                 stripped_key_slice = lemmatize_czech(key.to_lowercase().as_str());
             }
-            info!("Lemma'd: {}", stripped_key_slice);
+            //info!("Lemma'd: {}", stripped_key_slice);
 
             if stripped_key_slice != key {
                 let stripped_upper = stripped_key_slice.to_uppercase();
                 let stripped_upper_key = (lang.clone(), stripped_upper);
-                info!("Key: {:?}", stripped_upper_key);
+                //info!("Key: {:?}", stripped_upper_key);
 
                 if let Some(compressed_wrapper) = self.datastore.get(&stripped_upper_key) {
                     return Some(self.decompress_element(compressed_wrapper.value()));
@@ -112,14 +112,14 @@ impl DictionaryStore {
 
                 let stripped_lower = stripped_key_slice.to_lowercase();
                 let stripped_lower_key = (lang.clone(), stripped_lower);
-                info!("Key: {:?}", stripped_lower_key);
+                //info!("Key: {:?}", stripped_lower_key);
                 if let Some(compressed_wrapper) = self.datastore.get(&stripped_lower_key) {
                     return Some(self.decompress_element(compressed_wrapper.value()));
                 }
             }
         }
 
-        info!("Got nothing for lang: {:?} key: {:?}", lang, key);
+        //info!("Got nothing for lang: {:?} key: {:?}", lang, key);
 
         None
     }

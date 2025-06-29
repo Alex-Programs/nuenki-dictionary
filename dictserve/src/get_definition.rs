@@ -37,7 +37,7 @@ pub async fn get_definition(
     )];
     counter!("dictionary_query_language", &label).increment(1);
 
-    info!("Request: {:?}", payload);
+    //info!("Request: {:?}", payload);
 
     let t_start = Instant::now();
     let dict_element = state
