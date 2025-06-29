@@ -39,7 +39,6 @@ impl DictionaryStore {
 
         // Use rayon to parallelize insertion
         elements.into_par_iter().for_each(|element| {
-            info!("Example entry: {:?}", element);
             store.insert((element.lang.clone(), element.key.clone()), element);
         });
 
